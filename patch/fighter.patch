@@ -1,13 +1,19 @@
-diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
---- old/dat/Fighter.des	Thu Jan  1 09:00:00 1970
-+++ jnethack/dat/Fighter.des	Sun Apr 28 20:26:32 2002
-@@ -0,0 +1,325 @@
-+#	SCCS Id: @(#)Arch.des	3.2	91/12/13
-+#	Copyright (c) 1989 by Jean-Christophe Collet
-+#	Copyright (c) 1991 by M. Stephenson
+diff -urN JNH34302SJIS/dat/Fighter.des Fig34302/dat/Fighter.des
+--- JNH34302SJIS/dat/Fighter.des	Thu Jan  1 00:00:00 1970
++++ Fig34302/dat/Fighter.des	Thu Mar 18 21:24:12 2004
+@@ -0,0 +1,331 @@
++#      SCCS Id: @(#)Arch.des   3.2     91/12/13
++#      Copyright (c) 1989 by Jean-Christophe Collet
++#      Copyright (c) 1991 by M. Stephenson
 +# NetHack may be freely redistributed.  See license for details.
 +#
-+#	The "start" level for the quest.
++#      Japanese version Copyright
++#      (c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
++#      For 3.4, Copyright (c) Kentaro Shirakata, 2002-2003
++# JNetHack may be freely redistributed.  See license for details. 
++#
++#
++#      The "start" level for the quest.
 +#
 +MAZE: "Fig-strt",' '
 +FLAGS: noteleport,hardfloor
@@ -90,7 +96,7 @@ diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
 +MONSTER: 'S',random,(26,19)
 +
 +#
-+#	The "locate" level for the quest.
++#      The "locate" level for the quest.
 +#
 +
 +MAZE: "Fig-loca",' '
@@ -193,11 +199,11 @@ diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
 +OBJECT:'!',random,(3,15)
 +OBJECT:'!',random,(4,15)
 +#
-+#	The "goal" level for the quest.
++#      The "goal" level for the quest.
 +#
-+#	Here you meet Minion of Huhetol your nemesis monster.  You have to
-+#	defeat Minion of Huhetol in combat to gain the artifact you have
-+#	been assigned to retrieve.
++#      Here you meet Minion of Huhetol your nemesis monster.  You have to
++#      defeat Minion of Huhetol in combat to gain the artifact you have
++#      been assigned to retrieve.
 +#
 +
 +MAZE: "Fig-goal", ' '
@@ -274,7 +280,7 @@ diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
 +MONSTER:'Z',random,random
 +
 +#
-+#	The "fill" levels for the quest.
++#      The "fill" levels for the quest.
 +#
 +
 +MAZE: "Fig-fila" , ' '
@@ -327,34 +333,9 @@ diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
 +TRAP: random, random
 +TRAP: random, random
 +TRAP: random, random
-diff -aurN -xCVS old/dat/jdata.base jnethack/dat/jdata.base
---- old/dat/jdata.base	Sat Dec  7 00:38:41 2002
-+++ jnethack/dat/jdata.base	Fri Dec  6 02:45:26 2002
-@@ -3956,6 +3956,21 @@
- 	て，長びかせることで悪名高かった．実は，好戦的な天狗が人間に
- 	初めて武器の使い方を教えたとも云われる．
- 	[ Mythical Beasts, by Deirdre Headon (The Leprechaun Library) ]
-+幻の銀水晶
-+the silver crystal
-+	−−あなたしかいないの！
-+	「幻の銀水晶」の真の力を使って
-+	あれを封印できるのは
-+	プリンセス！あなただけなの！
-+	....
-+	プリンセス・セレニティ−−おぼえておいて
-+	「幻の銀水晶」はすべてあなたの心しだいなの
-+	強い信念と協調 そして深い愛情
-+	それがないと−−悪魔(サタン)であるあれを消し去ることはできない
-+	プリンセスであり 正義の戦士
-+	セーラームーンであることに
-+	誇りと自信を どうか もって
-+		[ 美少女戦士セーラームーン 第3巻，武内直子，講談社 ]
- トート
- thoth
- 	エジプトの月と智恵の神．トートは法律および科学，医学，幾何学を
-diff -aurN -xCVS old/dat/jquest.txt jnethack/dat/jquest.txt
---- old/dat/jquest.txt	Sat Dec  7 00:45:28 2002
-+++ jnethack/dat/jquest.txt	Mon Jul 22 01:04:33 2002
+diff -urN JNH34302SJIS/dat/jquest.txt Fig34302/dat/jquest.txt
+--- JNH34302SJIS/dat/jquest.txt	Sun Feb 29 13:02:52 2004
++++ Fig34302/dat/jquest.txt	Thu Mar 18 21:28:22 2004
 @@ -1242,6 +1242,227 @@
  「魔除けを献上せよ．%dが迎えてくれるだろう！」
  %E
@@ -583,9 +564,9 @@ diff -aurN -xCVS old/dat/jquest.txt jnethack/dat/jquest.txt
  #	Healer
  #
  %Cc Hea 00001
-diff -aurN -xCVS old/dat/jtrnsmon.dat jnethack/dat/jtrnsmon.dat
---- old/dat/jtrnsmon.dat	Sat Dec  7 01:00:30 2002
-+++ jnethack/dat/jtrnsmon.dat	Sat Dec  7 01:00:51 2002
+diff -urN JNH34302SJIS/dat/jtrnsmon.dat Fig34302/dat/jtrnsmon.dat
+--- JNH34302SJIS/dat/jtrnsmon.dat	Sun Feb 29 13:03:06 2004
++++ Fig34302/dat/jtrnsmon.dat	Thu Mar 18 21:30:58 2004
 @@ -521,6 +521,7 @@
  Barbarian:		野蛮人:
  Caveman:		洞窟人:
@@ -594,14 +575,14 @@ diff -aurN -xCVS old/dat/jtrnsmon.dat jnethack/dat/jtrnsmon.dat
  Healer:			薬師:
  Knight:			騎士:
  Monk:			武闘家:
-@@ -537,6 +538,7 @@
+@@ -536,6 +537,7 @@
+ barbarian:		野蛮人:
  caveman:		洞窟人:
  cavewoman:		洞窟人:
- elf:			エルフ:
 +fighter:		戦士:
+ elf:			エルフ:
  healer:			薬師:
  knight:			騎士:
- monk:			武闘家:
 @@ -554,6 +556,7 @@
  Lord Carnarvon:		ケナーヴェン卿:
  Pelias:			ピーリエス:
@@ -636,9 +617,9 @@ diff -aurN -xCVS old/dat/jtrnsmon.dat jnethack/dat/jtrnsmon.dat
  Athena:			アテナ:
  Hermes:			ヘルメス:
  Poseidon:		ポセイドン:	
-diff -aurN -xCVS old/dat/jtrnsobj.dat jnethack/dat/jtrnsobj.dat
---- old/dat/jtrnsobj.dat	Sat Dec  7 00:59:47 2002
-+++ jnethack/dat/jtrnsobj.dat	Sat Dec  7 00:59:19 2002
+diff -urN JNH34302SJIS/dat/jtrnsobj.dat Fig34302/dat/jtrnsobj.dat
+--- JNH34302SJIS/dat/jtrnsobj.dat	Sun Feb 29 13:03:10 2004
++++ Fig34302/dat/jtrnsobj.dat	Thu Mar 18 21:32:10 2004
 @@ -183,6 +183,7 @@
  ]crude ring mail:	粗末な鉄環の鎧:
  ]leather armor:		革鎧:
@@ -656,9 +637,9 @@ diff -aurN -xCVS old/dat/jtrnsobj.dat jnethack/dat/jtrnsobj.dat
  # H
  AThe Staff of Aesculapius:	アエスキュラピスの杖:
  # K
-diff -aurN -xCVS old/include/artilist.h jnethack/include/artilist.h
---- old/include/artilist.h	Sat Dec  7 00:26:29 2002
-+++ jnethack/include/artilist.h	Mon Apr 29 04:33:43 2002
+diff -urN JNH34302SJIS/include/artilist.h Fig34302/include/artilist.h
+--- JNH34302SJIS/include/artilist.h	Thu Mar  6 16:40:54 2003
++++ Fig34302/include/artilist.h	Thu Mar 18 21:36:18 2004
 @@ -176,6 +176,15 @@
  	TAMING,		A_CHAOTIC, NON_PM , PM_ELF, 8000L ),
  #endif
@@ -668,52 +649,53 @@ diff -aurN -xCVS old/include/artilist.h jnethack/include/artilist.h
 +	(SPFX_NOGEN|SPFX_RESTR|SPFX_INTEL),
 +		(SPFX_ESP|SPFX_REGEN|SPFX_DBONUS), 0,
 +	NO_ATTK,	NO_DFNS,	CARY(AD_MAGM),
-+	HEALING,	A_LAWFUL,	'F' ),
++	HEALING,	A_LAWFUL, PM_FIGHTER, NON_PM, 8000L ),
 +#endif
 +
 +
  A("The Staff of Aesculapius",	QUARTERSTAFF,
  	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK|SPFX_INTEL|SPFX_DRLI|SPFX_REGEN), 0,0,
  	DRLI(0,0),	DRLI(0,0),	NO_CARY,
-diff -aurN -xCVS old/include/config.h jnethack/include/config.h
---- old/include/config.h	Sat Dec  7 00:26:31 2002
-+++ jnethack/include/config.h	Sun Nov  3 20:42:55 2002
-@@ -150,6 +150,7 @@
- 
- #ifdef JNETHACK
- /*#define NEWBIE*/		/* more verbose for newbie */
-+#define FIGHTER		/* Sailor Fighter with sailor blouse */
+diff -urN JNH34302SJIS/include/config.h Fig34302/include/config.h
+--- JNH34302SJIS/include/config.h	Sat Jan 10 19:06:48 2004
++++ Fig34302/include/config.h	Thu Mar 18 21:39:06 2004
+@@ -153,6 +153,7 @@
  /*#define NH_EXTENSION*/	/* Some extension for game */
- #define XI18N
- #define INSTALLCOLORMAP
-diff -aurN -xCVS old/src/attrib.c jnethack/src/attrib.c
---- old/src/attrib.c	Sat Dec  7 00:27:46 2002
-+++ jnethack/src/attrib.c	Wed Dec  4 06:37:01 2002
-@@ -67,6 +67,10 @@
- 		     {	15, &(HWarning), "敏感になった", "鈍感になった" },
+ # define XI18N
+ # define INSTALLCOLORMAP
++# define FIGHTER		/* Sailor Fighter with sailor blouse */
  #endif
- 		     {	 0, 0, 0, 0 } },
-+#ifdef FIGHTER
-+	fig_abil[] = { {	7, &(HFast),  "素早さを得た", "遅くなった" },
-+		     {	 0, 0, 0, 0 } },
-+#endif
  
+ #ifndef WIZARD		/* allow for compile-time or Makefile changes */
+diff -urN JNH34302SJIS/src/attrib.c Fig34302/src/attrib.c
+--- JNH34302SJIS/src/attrib.c	Sun Feb 29 12:52:30 2004
++++ Fig34302/src/attrib.c	Thu Mar 18 21:42:16 2004
+@@ -68,6 +68,11 @@
+ 		     {	15, &(HWarning), "敏感になった", "鈍感になった" },
+ 		     {	 0, 0, 0, 0 } },
+ 
++#ifdef FIGHTER
++	fig_abil[] = { {	 7, &(HFast), "素早さを得た", "遅くなった" },
++		     {	 0, 0, 0, 0 } },
++
++#endif
  	hea_abil[] = { {	 1, &(HPoison_resistance), "", "" },
  /*JP
-@@ -653,6 +657,9 @@
+ 		     {	15, &(HWarning), "sensitive", "" },
+@@ -671,6 +676,9 @@
  	case PM_ARCHEOLOGIST:   abil = arc_abil;	break;
  	case PM_BARBARIAN:      abil = bar_abil;	break;
  	case PM_CAVEMAN:        abil = cav_abil;	break;
 +#ifdef FIGHTER
-+	case PM_FIGHTER:	abil = fig_abil;	break;
++	case PM_FIGHTER:        abil = fig_abil;	break;
 +#endif
  	case PM_HEALER:         abil = hea_abil;	break;
  	case PM_KNIGHT:         abil = kni_abil;	break;
  	case PM_MONK:           abil = mon_abil;	break;
-diff -aurN -xCVS old/src/do_wear.c jnethack/src/do_wear.c
---- old/src/do_wear.c	Sat Dec  7 00:28:31 2002
-+++ jnethack/src/do_wear.c	Wed Dec  4 06:37:01 2002
-@@ -631,6 +631,16 @@
+diff -urN JNH34302SJIS/src/do_wear.c Fig34302/src/do_wear.c
+--- JNH34302SJIS/src/do_wear.c	Sun Feb 29 12:48:02 2004
++++ Fig34302/src/do_wear.c	Thu Mar 18 21:45:26 2004
+@@ -672,6 +672,16 @@
  int
  Armor_on()
  {
@@ -721,45 +703,47 @@ diff -aurN -xCVS old/src/do_wear.c jnethack/src/do_wear.c
 +  switch(uarm->otyp) {
 +  case SAILOR_BLOUSE:
 +      if(flags.female/* || Role_is('F'*/)
-+	  ;
++         ;
 +      else
-+	  curse(uarm);
++         curse(uarm);
 +      break;
 +  }
 +#endif
      return 0;
  }
  
-@@ -1730,6 +1740,9 @@
+@@ -1794,6 +1804,9 @@
  	} else {
  		if(is_cloak(otmp)) (void) Cloak_on();
- /*		if(is_shield(otmp)) (void) Shield_on(); */
+ 		if (is_shield(otmp)) (void) Shield_on();
 +#ifdef FIGHTER
 +		if(otmp == uarm) (void) Armor_on();
 +#endif
- 		on_msg(otmp);
- 	}
- 	takeoff_mask = taking_off = 0L;
-diff -aurN -xCVS old/src/dog.c jnethack/src/dog.c
---- old/src/dog.c	Sat Dec  7 00:28:46 2002
-+++ jnethack/src/dog.c	Wed Dec  4 06:37:01 2002
-@@ -160,6 +160,9 @@
- 	    if(Role_if(PM_SAMURAI)) petname = "ハチ公";
- 	    if(Role_if(PM_BARBARIAN)) petname = "イデフィクス";
+ #ifdef TOURIST
+ 		if (is_shirt(otmp)) (void) Shirt_on();
+ #endif
+diff -urN JNH34302SJIS/src/dog.c Fig34302/src/dog.c
+--- JNH34302SJIS/src/dog.c	Sun Feb 29 12:53:22 2004
++++ Fig34302/src/dog.c	Thu Mar 18 21:48:02 2004
+@@ -180,6 +180,11 @@
  	    if(Role_if(PM_RANGER)) petname = "シリウス";
-+#ifdef FIGHTER
-+	    if(Role_if(PM_FIGHTER)) petname = rn2(2) ? "ルナ" : "アルテミス";
-+#endif
  #endif /*JP*/
  	}
++#ifdef FIGHTER
++	if (!*petname && pettype == PM_KITTEN) {
++	    if(Role_if(PM_FIGHTER)) petname = rn2(2) ? "ルナ" : "アルテミス";
++	}
++#endif
  
-diff -aurN -xCVS old/src/makemon.c jnethack/src/makemon.c
---- old/src/makemon.c	Sat Dec  7 00:29:09 2002
-+++ jnethack/src/makemon.c	Wed Dec  4 06:37:01 2002
-@@ -1040,6 +1040,42 @@
+ 	mtmp = makemon(&mons[pettype], u.ux, u.uy, MM_EDOG);
+ 
+diff -urN JNH34302SJIS/src/makemon.c Fig34302/src/makemon.c
+--- JNH34302SJIS/src/makemon.c	Sun Feb 29 12:56:46 2004
++++ Fig34302/src/makemon.c	Thu Mar 18 21:54:02 2004
+@@ -1091,6 +1091,42 @@
+ 	    if (mtmp->minvent) discard_minvent(mtmp);
  	    mtmp->minvent = (struct obj *)0;    /* caller expects this */
  	}
- 
 +#ifdef FIGHTER
 +	if(ptr == &mons[PM_PLANETARY_FIGHTER]){
 +	  static int uniq_num = 0;
@@ -799,10 +783,10 @@ diff -aurN -xCVS old/src/makemon.c jnethack/src/makemon.c
  	if ((ptr->mflags3 & M3_WAITMASK) && !(mmflags & MM_NOWAIT)) {
  		if (ptr->mflags3 & M3_WAITFORU)
  			mtmp->mstrategy |= STRAT_WAITFORU;
-diff -aurN -xCVS old/src/monst.c jnethack/src/monst.c
---- old/src/monst.c	Sat Dec  7 00:30:06 2002
-+++ jnethack/src/monst.c	Wed Dec  4 06:37:01 2002
-@@ -2947,6 +2947,16 @@
+diff -urN JNH34302SJIS/src/monst.c Fig34302/src/monst.c
+--- JNH34302SJIS/src/monst.c	Wed Dec 10 12:50:16 2003
++++ Fig34302/src/monst.c	Thu Mar 18 22:04:08 2004
+@@ -2951,6 +2951,15 @@
  	M1_HUMANOID|M1_OMNIVORE,
  	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_FEMALE|M2_COLLECT, M3_INFRAVISIBLE,
  	HI_DOMESTIC),
@@ -813,13 +797,12 @@ diff -aurN -xCVS old/src/monst.c jnethack/src/monst.c
 +	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 +	SIZ(WT_ELF, 350, 0, MS_HUMANOID, MZ_HUMAN), 0, 0,
 +	M1_HUMANOID|M1_OMNIVORE,
-+	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_COLLECT, 0, HI_DOMESTIC),
++	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_COLLECT, M3_INFRAVISIBLE, HI_DOMESTIC),
 +#endif
-+
      MON("healer", S_HUMAN,
  	LVL(10, 12, 10, 1, 0), G_NOGEN,
  	A(ATTK(AT_WEAP, AD_PHYS, 1, 6),
-@@ -3085,6 +3095,17 @@
+@@ -3089,6 +3098,17 @@
  	  M2_FEMALE|M2_COLLECT|M2_MAGIC,
  	M3_CLOSE|M3_INFRAVISION|M3_INFRAVISIBLE, HI_LORD),
  #endif
@@ -832,34 +815,33 @@ diff -aurN -xCVS old/src/monst.c jnethack/src/monst.c
 +	M1_HUMANOID|M1_OMNIVORE,
 +	M2_NOPOLY|M2_HUMAN|M2_PEACEFUL|M2_STRONG|M2_FEMALE|
 +	  M2_COLLECT|M2_MAGIC,
-+	M3_CLOSE, HI_LORD),
++	M3_CLOSE|M3_INFRAVISIBLE, HI_LORD),
 +#endif
      MON("Hippocrates", S_HUMAN,
  	LVL(20, 12, 0, 40, 0), (G_NOGEN|G_UNIQ),
  	A(ATTK(AT_WEAP, AD_PHYS, 1, 6),
-@@ -3229,6 +3250,17 @@
+@@ -3233,6 +3253,17 @@
  	  M2_GREEDY|M2_JEWELS|M2_COLLECT|M2_MAGIC,
  	M3_WANTSARTI|M3_WAITFORU|M3_INFRAVISION|M3_INFRAVISIBLE, HI_LORD),
  #endif
 +#ifdef FIGHTER
 +    MON("Jedeite", S_HUMAN,
-+	LVL(15, 10, 10, 0, -15), (G_NOGEN|G_UNIQ),
-+	A(ATTK(AT_WEAP, AD_PHYS, 2, 6), ATTK(AT_WEAP, AD_PHYS, 2, 6),
-+	  ATTK(AT_CLAW, AD_SAMU, 1, 6), NO_ATTK, NO_ATTK, NO_ATTK),
-+	SIZ(750, 350, 0, MS_NEMESIS, MZ_HUMAN), 0, 0,
-+	M1_HUMANOID|M1_OMNIVORE,
-+	M2_NOPOLY|M2_ORC|M2_HOSTILE|M2_STRONG|M2_STALK|M2_NASTY|M2_MALE|
-+	  M2_GREEDY|M2_JEWELS|M2_COLLECT|M2_MAGIC,
-+	M3_WANTSARTI|M3_WAITFORU, HI_LORD),
++       LVL(15, 10, 10, 0, -15), (G_NOGEN|G_UNIQ),
++       A(ATTK(AT_WEAP, AD_PHYS, 2, 6), ATTK(AT_WEAP, AD_PHYS, 2, 6),
++         ATTK(AT_CLAW, AD_SAMU, 1, 6), NO_ATTK, NO_ATTK, NO_ATTK),
++       SIZ(750, 350, 0, MS_NEMESIS, MZ_HUMAN), 0, 0,
++       M1_HUMANOID|M1_OMNIVORE,
++       M2_NOPOLY|M2_ORC|M2_HOSTILE|M2_STRONG|M2_STALK|M2_NASTY|M2_MALE|
++         M2_GREEDY|M2_JEWELS|M2_COLLECT|M2_MAGIC,
++       M3_WANTSARTI|M3_WAITFORU|M3_INFRAVISION, HI_LORD),
 +#endif
      MON("Cyclops", S_GIANT,
  	LVL(18, 12, 0, 0, -15), (G_NOGEN|G_UNIQ),
  	A(ATTK(AT_WEAP, AD_PHYS, 4, 8), ATTK(AT_WEAP, AD_PHYS, 4, 8),
-@@ -3358,6 +3390,15 @@
- 	M1_HUMANOID|M1_SEE_INVIS|M1_OMNIVORE,
+@@ -3365,6 +3396,16 @@
  	M2_NOPOLY|M2_ELF|M2_PEACEFUL|M2_COLLECT,
  	M3_INFRAVISION|M3_INFRAVISIBLE, HI_DOMESTIC),
-+#endif
+ #endif
 +#ifdef FIGHTER
 +    MON("planetary fighter", S_HUMAN,
 +	LVL(5, 12, 10, 10, 7), G_NOGEN,
@@ -867,52 +849,53 @@ diff -aurN -xCVS old/src/monst.c jnethack/src/monst.c
 +	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
 +	SIZ(WT_HUMAN, 350, 0, MS_GUARDIAN, MZ_HUMAN), MR_SLEEP, MR_SLEEP,
 +	M1_HUMANOID|M1_SEE_INVIS|M1_OMNIVORE,
-+	M2_NOPOLY|M2_HUMAN|M2_PEACEFUL|M2_COLLECT, 0, HI_DOMESTIC),
- #endif
++	M2_NOPOLY|M2_HUMAN|M2_PEACEFUL|M2_COLLECT, M3_INFRAVISIBLE,
++	HI_DOMESTIC),
++#endif
      MON("attendant", S_HUMAN,
  	LVL(5, 12, 10, 10, 3), G_NOGEN,
-diff -aurN -xCVS old/src/mplayer.c jnethack/src/mplayer.c
---- old/src/mplayer.c	Sat Dec  7 00:30:21 2002
-+++ jnethack/src/mplayer.c	Wed Dec  4 06:37:01 2002
-@@ -188,6 +188,11 @@
+ 	A(ATTK(AT_WEAP, AD_PHYS, 1, 6),
+diff -urN JNH34302SJIS/src/mplayer.c Fig34302/src/mplayer.c
+--- JNH34302SJIS/src/mplayer.c	Sun Feb 29 12:58:04 2004
++++ Fig34302/src/mplayer.c	Thu Mar 18 22:10:50 2004
+@@ -190,6 +190,14 @@
  		    else if (rn2(2)) weapon = CLUB;
  		    if (helm == HELM_OF_BRILLIANCE) helm = STRANGE_OBJECT;
  		    break;
 +#ifdef FIGHTER
 +		case PM_FIGHTER:
 +		    weapon = SHORT_SWORD;
++		    armor = SAILOR_BLOUSE;
++		    if (rn2(4)) helm = HELM_OF_BRILLIANCE;
++		    if (rn2(2)) shield = STRANGE_OBJECT;
 +		    break;
 +#endif
  		case PM_HEALER:
  		    if (rn2(4)) weapon = QUARTERSTAFF;
  		    else if (rn2(2)) weapon = rn2(2) ? UNICORN_HORN : SCALPEL;
-diff -aurN -xCVS old/src/objects.c jnethack/src/objects.c
---- old/src/objects.c	Sat Dec  7 00:31:13 2002
-+++ jnethack/src/objects.c	Wed Dec  4 06:37:01 2002
-@@ -388,10 +388,19 @@
+diff -urN JNH34302SJIS/src/objects.c Fig34302/src/objects.c
+--- JNH34302SJIS/src/objects.c	Fri Dec  5 01:21:28 2003
++++ Fig34302/src/objects.c	Thu Mar 18 22:15:32 2004
+@@ -392,8 +392,15 @@
  	1, 0, 0, 0,	72, 5, 250, 100,  7, 0, ARM_SUIT, IRON, HI_METAL),
  ARMOR("orcish ring mail", "crude ring mail",
  	0, 0, 0, 0,	20, 5, 250,  80,  8, 1, ARM_SUIT, IRON, CLR_BLACK),
 +#ifdef FIGHTER
 +ARMOR("leather armor", (char *)0,
 +	1, 0, 0, 0,	70, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
++ARMOR("sailor blouse", (char *)0,
++	1, 0, 0, 0,	12, 0,	30, 200,  7, 0, ARM_SUIT, CLOTH, CLR_WHITE),
 +#else
  ARMOR("leather armor", (char *)0,
  	1, 0, 0, 0,	82, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
 +#endif
  ARMOR("leather jacket", (char *)0,
  	1, 0, 0, 0,	12, 0,	30,  10,  9, 0, ARM_SUIT, LEATHER, CLR_BLACK),
-+#ifdef FIGHTER
-+ARMOR("sailor blouse", (char *)0,
-+	1, 0, 0, 0,	12, 0,	30, 200,  7, 0, ARM_SUIT, CLOTH, CLR_WHITE),
-+#endif
  
- 
- #ifdef TOURIST
-diff -aurN -xCVS old/src/role.c jnethack/src/role.c
---- old/src/role.c	Sat Dec  7 00:31:54 2002
-+++ jnethack/src/role.c	Wed Dec  4 06:37:01 2002
-@@ -148,6 +148,36 @@
+diff -urN JNH34302SJIS/src/role.c Fig34302/src/role.c
+--- JNH34302SJIS/src/role.c	Sun Feb 29 13:00:26 2004
++++ Fig34302/src/role.c	Thu Mar 18 22:18:14 2004
+@@ -155,6 +155,36 @@
  	{  1, 0,  0, 1,  0, 1 },10,	/* Energy */
  	0, 12, 0, 1,  8, A_INT, SPE_DIG,             -4
  },
@@ -949,10 +932,10 @@ diff -aurN -xCVS old/src/role.c jnethack/src/role.c
  {	{"Healer", 0}, 
  	{"薬師", 0}, {
  #if 0 /*JP*/
-diff -aurN -xCVS old/src/shk.c jnethack/src/shk.c
---- old/src/shk.c	Sat Dec  7 00:32:43 2002
-+++ jnethack/src/shk.c	Wed Dec  4 06:37:01 2002
-@@ -2187,6 +2187,14 @@
+diff -urN JNH34302SJIS/src/shk.c Fig34302/src/shk.c
+--- JNH34302SJIS/src/shk.c	Sun Feb 29 13:00:40 2004
++++ Fig34302/src/shk.c	Thu Mar 18 22:24:04 2004
+@@ -2244,6 +2244,14 @@
  		} else if (!(obj->o_id % 4)) /* arbitrarily impose surcharge */
  		    tmp += tmp / 3L;
  	}
@@ -967,37 +950,37 @@ diff -aurN -xCVS old/src/shk.c jnethack/src/shk.c
  #ifdef TOURIST
  	if ((Role_if(PM_TOURIST) && u.ulevel < (MAXULEV/2))
  	    || (uarmu && !uarm && !uarmc))	/* touristy shirt visible */
-@@ -2313,6 +2321,16 @@
+@@ -2370,6 +2378,16 @@
  {
  	long tmp = getprice(obj, TRUE) * obj->quan;
  
 +#ifdef FIGHTER
-+	if (obj->otyp == SAILOR_BLOUSE){
-+	    if (flags.female/* && Role_is('F')*/)
-+		tmp *= 10;
-+	    else if (flags.female)
-+		tmp *= 5;
-+/*	    else if (!Role_is('F'))
-+	    tmp = 0;*/
-+	}
++       if (obj->otyp == SAILOR_BLOUSE){
++           if (flags.female/* && Role_is('F')*/)
++               tmp *= 10;
++           else if (flags.female)
++               tmp *= 5;
++/*         else if (!Role_is('F'))
++           tmp = 0;*/
++       }
 +#endif
  #ifdef TOURIST
  	if ((Role_if(PM_TOURIST) && u.ulevel < (MAXULEV/2))
  	    || (uarmu && !uarm && !uarmc))	/* touristy shirt visible */
-diff -aurN -xCVS old/src/u_init.c jnethack/src/u_init.c
---- old/src/u_init.c	Sat Dec  7 00:33:22 2002
-+++ jnethack/src/u_init.c	Wed Dec  4 06:37:01 2002
+diff -urN JNH34302SJIS/src/u_init.c Fig34302/src/u_init.c
+--- JNH34302SJIS/src/u_init.c	Wed Dec 10 12:50:16 2003
++++ Fig34302/src/u_init.c	Thu Mar 18 22:34:18 2004
 @@ -55,6 +55,15 @@
  	{ LEATHER_ARMOR, 0, ARMOR_CLASS, 1, UNDEF_BLESS },
  	{ 0, 0, 0, 0, 0 }
  };
 +#ifdef FIGHTER
 +static struct trobj Fighter[] = {
-+	{ SHORT_SWORD, 2, WEAPON_CLASS, 1, 1 },
-+	{ SAILOR_BLOUSE, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
-+	{ WAN_POLYMORPH, UNDEF_SPE, WAND_CLASS, 1, UNDEF_BLESS },
-+	{ UNDEF_TYP, UNDEF_SPE, SCROLL_CLASS, 3, UNDEF_BLESS },
-+	{ 0, 0, 0, 0, 0 }
++       { SHORT_SWORD, 2, WEAPON_CLASS, 1, 1 },
++       { SAILOR_BLOUSE, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
++       { WAN_POLYMORPH, UNDEF_SPE, WAND_CLASS, 1, UNDEF_BLESS },
++       { UNDEF_TYP, UNDEF_SPE, SCROLL_CLASS, 3, UNDEF_BLESS },
++       { 0, 0, 0, 0, 0 }
 +};
 +#endif /* FIGHTER */
  static struct trobj Healer[] = {
@@ -1016,13 +999,13 @@ diff -aurN -xCVS old/src/u_init.c jnethack/src/u_init.c
 +    { P_SPEAR, P_EXPERT },		{ P_JAVELIN, P_BASIC },
 +    { P_BOW, P_EXPERT },		{ P_SLING, P_BASIC },
 +    { P_CROSSBOW, P_BASIC },		{ P_SHURIKEN, P_BASIC },
-+    { P_TWO_WEAPON_COMBAT, P_EXPERT },	{ P_MARTIAL_ARTS, 3 },
++    { P_TWO_WEAPON_COMBAT, P_EXPERT },	{ P_MARTIAL_ARTS, P_MASTER },
 +    { P_ENCHANTMENT_SPELL, P_SKILLED },
 +    { P_NONE, 0 }
 +};
 +#endif /* FIGHTER */
 +
- static struct def_skill Skill_H[] = {
+ static const struct def_skill Skill_H[] = {
      { P_DAGGER, P_SKILLED },		{ P_KNIFE, P_EXPERT },
      { P_SHORT_SWORD, P_SKILLED },	{ P_SCIMITAR, P_BASIC },
 @@ -628,6 +652,15 @@
@@ -1041,10 +1024,10 @@ diff -aurN -xCVS old/src/u_init.c jnethack/src/u_init.c
  	case PM_HEALER:
  #ifndef GOLDOBJ
  		u.ugold = u.ugold0 = rn1(1000, 1001);
-diff -aurN -xCVS old/src/weapon.c jnethack/src/weapon.c
---- old/src/weapon.c	Sat Dec  7 00:33:54 2002
-+++ jnethack/src/weapon.c	Wed Dec  4 06:37:01 2002
-@@ -1360,6 +1360,12 @@
+diff -urN JNH34302SJIS/src/weapon.c Fig34302/src/weapon.c
+--- JNH34302SJIS/src/weapon.c	Sun Feb 29 13:02:06 2004
++++ Fig34302/src/weapon.c	Thu Mar 18 22:35:48 2004
+@@ -1383,6 +1383,12 @@
  		P_SKILL(P_ATTACK_SPELL) = P_BASIC;
  		P_SKILL(P_ENCHANTMENT_SPELL) = P_BASIC;
  	}
@@ -1057,57 +1040,92 @@ diff -aurN -xCVS old/src/weapon.c jnethack/src/weapon.c
  
  	/* walk through array to set skill maximums */
  	for (; class_skill->skill != P_NONE; class_skill++) {
-diff -aurN -xCVS old/sys/msdos/Makefile.GCC jnethack/sys/msdos/Makefile.GCC
---- old/sys/msdos/Makefile.GCC	Sat Dec  7 00:35:57 2002
-+++ jnethack/sys/msdos/Makefile.GCC	Mon Sep 16 04:20:35 2002
-@@ -961,6 +961,7 @@
- 	lev_comp tourist.des
- 	lev_comp valkyrie.des
- 	lev_comp wizard.des
-+#	lev_comp fighter.des
- 	cd $(SRC)
- 	echo sp_levs done > sp_lev.tag
- 	
-diff -aurN -xCVS old/sys/unix/Makefile.dat jnethack/sys/unix/Makefile.dat
---- old/sys/unix/Makefile.dat	Sat Dec  7 00:36:24 2002
-+++ jnethack/sys/unix/Makefile.dat	Tue May  7 17:36:53 2002
-@@ -104,7 +104,7 @@
- quest_levs: ../util/lev_comp \
- 	Arch.des Barb.des Caveman.des Healer.des Knight.des Monk.des \
- 	Priest.des Ranger.des Rogue.des Samurai.des Tourist.des Valkyrie.des \
--	Wizard.des
-+	Wizard.des Fighter.des
- 	../util/lev_comp Arch.des
- 	../util/lev_comp Barb.des
- 	../util/lev_comp Caveman.des
-@@ -118,6 +118,7 @@
- 	../util/lev_comp Tourist.des
- 	../util/lev_comp Valkyrie.des
- 	../util/lev_comp Wizard.des
-+	../util/lev_comp Fighter.des
- 	touch quest_levs
+diff -urN JNH34302SJIS/sys/msdos/Makefile.GCC Fig34302/sys/msdos/Makefile.GCC
+--- JNH34302SJIS/sys/msdos/Makefile.GCC	Thu Sep  4 04:05:10 2003
++++ Fig34302/sys/msdos/Makefile.GCC	Thu Mar 18 22:43:42 2004
+@@ -908,7 +908,7 @@
+ 	$(DAT)/caveman.des   $(DAT)/healer.des   $(DAT)/knight.des \
+ 	$(DAT)/monk.des      $(DAT)/priest.des   $(DAT)/ranger.des \
+ 	$(DAT)/rogue.des     $(DAT)/samurai.des  $(DAT)/tourist.des \
+-	$(DAT)/valkyrie.des  $(DAT)/wizard.des
++	$(DAT)/valkyrie.des  $(DAT)/wizard.des  $(DAT)/fighter.des
+ 	@$(subst /,\,cd $(DAT))
+ 	@$(subst /,\,$(U)lev_comp bigroom.des)
+ 	@$(subst /,\,$(U)lev_comp castle.des)
+@@ -934,6 +934,7 @@
+ 	@$(subst /,\,$(U)lev_comp tourist.des)
+ 	@$(subst /,\,$(U)lev_comp valkyrie.des)
+ 	@$(subst /,\,$(U)lev_comp wizard.des)
++	@$(subst /,\,$(U)lev_comp fighter.des)
+ 	@$(subst /,\,cd $(SRC))
+ 	@$(subst /,\,echo sp_levs done > $@)
  
- dungeon: dungeon.def ../util/makedefs ../util/dgn_comp
-diff -aurN -xCVS old/sys/winnt/Makefile.msc jnethack/sys/winnt/Makefile.msc
---- old/sys/winnt/Makefile.msc	Sat Dec  7 00:36:52 2002
-+++ jnethack/sys/winnt/Makefile.msc	Mon Jul 22 01:04:33 2002
-@@ -534,6 +534,7 @@
- 	$(U)lev_comp tourist.des
- 	$(U)lev_comp valkyrie.des
- 	$(U)lev_comp wizard.des
+diff -urN JNH34302SJIS/sys/winnt/Makefile.bcc Fig34302/sys/winnt/Makefile.bcc
+--- JNH34302SJIS/sys/winnt/Makefile.bcc	Wed Dec 10 12:50:20 2003
++++ Fig34302/sys/winnt/Makefile.bcc	Thu Mar 18 22:48:46 2004
+@@ -563,6 +563,7 @@
+ 	$(DAT)\endgame.des $(DAT)\gehennom.des $(DAT)\knox.des   \
+ 	$(DAT)\medusa.des  $(DAT)\oracle.des   $(DAT)\tower.des  \
+ 	$(DAT)\yendor.des  $(DAT)\arch.des     $(DAT)\barb.des   \
++	$(DAT)\fighter.des \
+ 	$(DAT)\caveman.des $(DAT)\healer.des   $(DAT)\knight.des \
+ 	$(DAT)\monk.des    $(DAT)\priest.des   $(DAT)\ranger.des \
+ 	$(DAT)\rogue.des   $(DAT)\samurai.des  $(DAT)\sokoban.des \
+@@ -581,6 +582,7 @@
+ 	$(U)lev_comp yendor.des
+ 	$(U)lev_comp arch.des
+ 	$(U)lev_comp barb.des
 +	$(U)lev_comp fighter.des
- 	cd $(SRC)
- 	echo sp_levs done > $(O)sp_lev.tag
- 
-diff -aurN -xCVS old/util/makedefs.c jnethack/util/makedefs.c
---- old/util/makedefs.c	Sat Dec  7 00:34:51 2002
-+++ jnethack/util/makedefs.c	Mon Jul 22 01:04:33 2002
-@@ -701,6 +701,9 @@
+ 	$(U)lev_comp caveman.des
+ 	$(U)lev_comp healer.des
+ 	$(U)lev_comp knight.des
+diff -urN JNH34302SJIS/sys/winnt/Makefile.gcc Fig34302/sys/winnt/Makefile.gcc
+--- JNH34302SJIS/sys/winnt/Makefile.gcc	Wed Dec 10 12:50:20 2003
++++ Fig34302/sys/winnt/Makefile.gcc	Thu Mar 18 22:50:14 2004
+@@ -521,6 +521,7 @@
+ 	 $(DAT)/endgame.des $(DAT)/gehennom.des $(DAT)/knox.des   \
+ 	 $(DAT)/medusa.des  $(DAT)/oracle.des   $(DAT)/tower.des  \
+ 	 $(DAT)/yendor.des  $(DAT)/arch.des     $(DAT)/barb.des   \
++	 $(DAT)\fighter.des \
+ 	 $(DAT)/caveman.des $(DAT)/healer.des   $(DAT)/knight.des \
+ 	 $(DAT)/monk.des    $(DAT)/priest.des   $(DAT)/ranger.des \
+ 	 $(DAT)/rogue.des   $(DAT)/samurai.des  $(DAT)/sokoban.des \
+@@ -538,6 +539,7 @@
+ 	$(subst /,\,$(U)lev_comp $(DAT)/yendor.des)
+ 	$(subst /,\,$(U)lev_comp $(DAT)/arch.des)
+ 	$(subst /,\,$(U)lev_comp $(DAT)/barb.des)
++	$(subst /,\,$(U)lev_comp $(DAT)/fighter.des)
+ 	$(subst /,\,$(U)lev_comp $(DAT)/caveman.des)
+ 	$(subst /,\,$(U)lev_comp $(DAT)/healer.des)
+ 	$(subst /,\,$(U)lev_comp $(DAT)/knight.des)
+diff -urN JNH34302SJIS/sys/winnt/Makefile.msc Fig34302/sys/winnt/Makefile.msc
+--- JNH34302SJIS/sys/winnt/Makefile.msc	Wed Dec 10 12:50:20 2003
++++ Fig34302/sys/winnt/Makefile.msc	Thu Mar 18 22:46:50 2004
+@@ -501,6 +501,7 @@
+ 	$(DAT)\endgame.des $(DAT)\gehennom.des $(DAT)\knox.des   \
+ 	$(DAT)\medusa.des  $(DAT)\oracle.des   $(DAT)\tower.des  \
+ 	$(DAT)\yendor.des  $(DAT)\arch.des     $(DAT)\barb.des   \
++	$(DAT)\fighter.des \
+ 	$(DAT)\caveman.des $(DAT)\healer.des   $(DAT)\knight.des \
+ 	$(DAT)\monk.des    $(DAT)\priest.des   $(DAT)\ranger.des \
+ 	$(DAT)\rogue.des   $(DAT)\samurai.des  $(DAT)\sokoban.des \
+@@ -519,6 +520,7 @@
+ 	$(U)lev_comp yendor.des
+ 	$(U)lev_comp arch.des
+ 	$(U)lev_comp barb.des
++	$(U)lev_comp fighter.des
+ 	$(U)lev_comp caveman.des
+ 	$(U)lev_comp healer.des
+ 	$(U)lev_comp knight.des
+diff -urN JNH34302SJIS/util/makedefs.c Fig34302/util/makedefs.c
+--- JNH34302SJIS/util/makedefs.c	Sun Feb 29 12:49:48 2004
++++ Fig34302/util/makedefs.c	Thu Mar 18 21:24:12 2004
+@@ -751,6 +751,9 @@
  #ifdef EXP_ON_BOTL
  		"experience points on status line",
  #endif
 +#ifdef FIGHTER
-+		"fighter",
++               "fighter",
 +#endif
  #ifdef MFLOPPY
  		"floppy drive support",
