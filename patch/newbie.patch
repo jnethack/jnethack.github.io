@@ -1,0 +1,252 @@
+diff -aurN -xCVS jnethack/include/config.h new/include/config.h
+--- jnethack/include/config.h	Thu Jan  2 15:08:58 2003
++++ new/include/config.h	Thu Jan  2 15:05:59 2003
+@@ -390,6 +390,7 @@
+  */
+ 
+ /*#define GOLDOBJ */	/* Gold is kept on obj chains - Helge Hafting */
++#define NEWBIE		/* more verbose for newbie */
+ 
+ /* End of Section 5 */
+ 
+diff -aurN -xCVS jnethack/include/flag.h new/include/flag.h
+--- jnethack/include/flag.h	Thu Jan  2 15:09:00 2003
++++ new/include/flag.h	Thu Jan  2 14:05:23 2003
+@@ -56,6 +56,9 @@
+ 	boolean  mv;
+ 	boolean  bypasses;	/* bypass flag is set on at least one fobj */
+ 	boolean  nap;		/* `timed_delay' option for display effects */
++#ifdef NEWBIE
++	boolean	 newbie;	/* newbie mode */
++#endif
+ 	boolean  nopick;	/* do not pickup objects (as when running) */
+ 	boolean  null;		/* OK to send nulls to the terminal */
+ #ifdef MAC
+diff -aurN -xCVS jnethack/include/hack.h new/include/hack.h
+--- jnethack/include/hack.h	Thu Jan  2 15:09:02 2003
++++ new/include/hack.h	Sat Dec  7 04:02:31 2002
+@@ -143,6 +143,10 @@
+ #include "extern.h"
+ #endif /* USE_TRAMPOLI */
+ 
++#ifdef NEWBIE
++#include "newbie.h"
++#endif
++
+ #define NO_SPELL	0
+ 
+ /* flags to control makemon() */
+diff -aurN -xCVS jnethack/include/newbie.h new/include/newbie.h
+--- jnethack/include/newbie.h	Thu Jan  1 09:00:00 1970
++++ new/include/newbie.h	Thu Jan  2 15:12:35 2003
+@@ -0,0 +1,27 @@
++/*
++  $Id: newbie.patch,v 1.1 2003/01/02 06:26:44 argrath Exp $
++ */
++
++#ifndef NEWBIE_H
++#define NEWBIE_H
++
++#include "global.h"
++
++struct newbie{
++     Bitfield(search, 1);
++     Bitfield(pickup, 1);
++     Bitfield(unlock, 1);
++     Bitfield(open, 1);
++     Bitfield(down, 1);
++     Bitfield(pray, 1);
++     Bitfield(fainted, 1);
++     Bitfield(weak, 1);
++     Bitfield(eat, 1);
++     Bitfield(loot, 1);
++     Bitfield(offer, 1);
++
++     int try_open;
++     int found_altar;
++     int found_chest;
++} newbie;
++#endif
+diff -aurN -xCVS jnethack/src/cmd.c new/src/cmd.c
+--- jnethack/src/cmd.c	Thu Jan  2 15:08:56 2003
++++ new/src/cmd.c	Wed Dec  4 06:37:01 2002
+@@ -2229,6 +2229,41 @@
+ 	boolean do_walk, do_rush, prefix_seen, bad_command,
+ 		firsttime = (cmd == 0);
+ 
++#ifdef NEWBIE
++	if(flags.newbie){
++	    if(!(moves % 256)){
++		if(!newbie.search){
++		    pline("ヒント: 's'で秘密の通路や扉を発見できる．");
++		    newbie.search = 1;
++		}
++		else if(!newbie.pickup){
++		    pline("ヒント: ','で通路に落ちている物体を拾うことができる．");
++		    newbie.pickup = 1;
++		}
++		else if(!newbie.open){
++		    pline("ヒント: 'o'で扉を開けることができる．");
++		    newbie.open = 1;
++		}
++		else if(!newbie.down){
++		    pline("ヒント: 下の階へ行くには'>'だ．");
++		    newbie.down = 1;
++		}
++		else if(!newbie.pray){
++		    pline("ヒント: ピンチのときに'M-p'で祈ると助かることがある．");
++		    newbie.pray = 1;
++		}
++		else if(!newbie.offer && newbie.found_altar && newbie.found_altar + 256 < moves){
++		    pline("ヒント: 祭壇に'M-o'で捧げものをしよう．いいことがあるかも．");
++		    newbie.offer = 1;
++		}
++		else if(!newbie.loot && newbie.found_chest  && newbie.found_chest + 256 < moves){
++		    pline("ヒント: 宝箱は'M-l'で中身の出し入れをすることができる．");
++		    newbie.loot = 1;
++		}
++	    }
++	}
++#endif
++
+ 	if (firsttime) {
+ 		flags.nopick = 0;
+ 		cmd = parse();
+diff -aurN -xCVS jnethack/src/detect.c new/src/detect.c
+--- jnethack/src/detect.c	Thu Jan  2 15:08:34 2003
++++ new/src/detect.c	Wed Dec  4 06:37:01 2002
+@@ -1518,6 +1518,9 @@
+ int
+ dosearch()
+ {
++#ifdef NEWBIE
++	newbie.search = 1;
++#endif
+ 	return(dosearch0(0));
+ }
+ 
+diff -aurN -xCVS jnethack/src/dokick.c new/src/dokick.c
+--- jnethack/src/dokick.c	Thu Jan  2 15:09:30 2003
++++ new/src/dokick.c	Wed Dec  4 06:37:01 2002
+@@ -982,6 +982,9 @@
+ 
+ 	if(!IS_DOOR(maploc->typ)) {
+ 		if(maploc->typ == SDOOR) {
++#ifdef NEWBIE
++	newbie.try_open = 1000;
++#endif
+ 		    if(!Levitation && rn2(30) < avrg_attrib) {
+ 			cvt_sdoor_to_door(maploc);	/* ->typ = DOOR */
+ /*JP
+@@ -1016,6 +1019,9 @@
+ 		    } else goto ouch;
+ 		}
+ 		if(maploc->typ == SCORR) {
++#ifdef NEWBIE
++	newbie.try_open = 1000;
++#endif
+ 		    if(!Levitation && rn2(30) < avrg_attrib) {
+ /*JP
+ 			pline("Crash!  You kick open a secret passage!");
+@@ -1300,6 +1306,9 @@
+ 	/* door is known to be CLOSED or LOCKED */
+ 	if(rnl(35) < avrg_attrib + (!martial() ? 0 : ACURR(A_DEX))) {
+ 		boolean shopdoor = *in_rooms(x, y, SHOPBASE) ? TRUE : FALSE;
++#ifdef NEWBIE
++	newbie.try_open = 1000;
++#endif
+ 		/* break the door */
+ 		if(maploc->doormask & D_TRAPPED) {
+ /*JP
+diff -aurN -xCVS jnethack/src/eat.c new/src/eat.c
+--- jnethack/src/eat.c	Thu Jan  2 15:09:40 2003
++++ new/src/eat.c	Thu Dec 19 22:15:01 2002
+@@ -2795,6 +2795,13 @@
+ 				afternmv = unfaint;
+ 				newhs = FAINTED;
+ 			}
++#ifdef NEWBIE
++			if(!newbie.fainted){
++			     pline("ヒント: ピンチのときはM-pで祈るという手もある．祈りすぎに注意！");
++/*			     more();*/
++			     newbie.fainted = 1;
++			}
++#endif
+ 		} else
+ 		if(u.uhunger < -(int)(200 + 20*ACURR(A_CON))) {
+ 			u.uhs = STARVED;
+diff -aurN -xCVS jnethack/src/lock.c new/src/lock.c
+--- jnethack/src/lock.c	Thu Jan  2 15:10:17 2003
++++ new/src/lock.c	Wed Dec  4 06:37:01 2002
+@@ -102,6 +102,9 @@
+ picklock()	/* try to open/close a lock */
+ {
+ 
++#ifdef NEWBIE
++	newbie.unlock = 1;
++#endif
+ 	if (xlock.box) {
+ 	    if((xlock.box->ox != u.ux) || (xlock.box->oy != u.uy)) {
+ 		return((xlock.usedtime = 0));		/* you or it moved */
+@@ -696,6 +699,9 @@
+ 	    pline("落し穴の中から届かない．");
+ 	    return 0;
+ 	}
++#ifdef NEWBIE
++	newbie.open = 1;
++#endif
+ 
+ 	if(!getdir((char *)0)) return(0);
+ 
+@@ -757,6 +763,15 @@
+ 		  break;
+ 		default:
+ 		  pline("扉には鍵が掛かっている．"); 
++#ifdef NEWBIE 
++		  ++newbie.try_open;
++		  if(newbie.try_open == 10){
++		       pline("ヒント: 鍵を開けるのに使えそうな物を探そう．'a'で使える．");
++		  }
++		  if(newbie.try_open == 30){
++		       pline("ヒント: 最後の手段として'C-d'で蹴りやぶれ！");
++		  }
++#endif
+ #endif
+ 		  break;
+ 	    }
+diff -aurN -xCVS jnethack/src/pickup.c new/src/pickup.c
+--- jnethack/src/pickup.c	Thu Jan  2 15:10:28 2003
++++ new/src/pickup.c	Wed Dec  4 06:37:01 2002
+@@ -469,6 +469,9 @@
+ 	    n = autopick(objchain, traverse_how, &pick_list);
+ 	    goto menu_pickup;
+ 	}
++#ifdef NEWBIE
++	newbie.pickup = 1;
++#endif
+ 
+ 	if (flags.menu_style != MENU_TRADITIONAL) {
+ 	    /* use menus exclusively */
+diff -aurN -xCVS jnethack/src/pray.c new/src/pray.c
+--- jnethack/src/pray.c	Thu Jan  2 15:10:45 2003
++++ new/src/pray.c	Wed Dec  4 06:37:01 2002
+@@ -1364,6 +1364,9 @@
+     int pm;
+     aligntyp altaralign = a_align(u.ux,u.uy);
+ 
++#ifdef NEWBIE
++    newbie.offer = 1;
++#endif
+     if (!on_altar()) {
+ /*JP
+ 	You("are not standing on an altar.");
+@@ -2008,6 +2011,9 @@
+     /* set up p_type and p_alignment */
+     if (!can_pray(TRUE)) return 0;
+ 
++#ifdef NEWBIE
++    newbie.pray = 1;
++#endif
+ #ifdef WIZARD
+     if (wizard && p_type >= 0) {
+ /*JP
