@@ -4,7 +4,7 @@ diff -aurN jnethack/extension/extension.c report/extension/extension.c
 @@ -0,0 +1,334 @@
 +/*
 +**
-+**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**	$Id: report.patch,v 1.2 2003/08/08 20:14:34 argrath Exp $
 +**
 +*/
 +
@@ -342,7 +342,7 @@ diff -aurN jnethack/extension/nhbuf.c report/extension/nhbuf.c
 @@ -0,0 +1,189 @@
 +/*
 +**
-+**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**	$Id: report.patch,v 1.2 2003/08/08 20:14:34 argrath Exp $
 +**
 +*/
 +
@@ -535,7 +535,7 @@ diff -aurN jnethack/extension/nhinet.c report/extension/nhinet.c
 @@ -0,0 +1,395 @@
 +/*
 +**
-+**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**	$Id: report.patch,v 1.2 2003/08/08 20:14:34 argrath Exp $
 +**
 +*/
 +
@@ -1209,3 +1209,157 @@ diff -aurN jnethack/src/topten.c report/src/topten.c
  	    }
  	} else {
  	    Sprintf(pbuf, "Cannot find any %sentries for ",
+diff -aur jnethack/sys/msdos/Makefile.GCC report/sys/msdos/Makefile.GCC
+--- jnethack/sys/msdos/Makefile.GCC	Sat Jul 12 03:51:25 2003
++++ report/sys/msdos/Makefile.GCC	Sat Jul 12 03:46:12 2003
+@@ -40,6 +40,7 @@
+ WIN  = ../win/tty
+ WSHR = ../win/share
+ JP   = ../japanese
++EXT   = ../extension
+ 
+ #
+ #  Executables.
+@@ -1023,6 +1024,15 @@
+ 
+ jtrns.o: $(JP)/jtrns.c $(HACK_H) $(INCL)/jdata.h
+ 	$(CC) $(cflags) -o$@ $(JP)/jtrns.c
++
++extension.o: $(EXT)/extension.c $(HACK_H)
++	$(CC) $(cflags) -o$@ $(EXT)/extension.c
++
++nhbuf.o: $(EXT)/nhbuf.c $(HACK_H)
++	$(CC) $(cflags) -o$@ $(EXT)/nhbuf.c
++
++nhinet.o: $(EXT)/nhinet.c $(HACK_H)
++	$(CC) $(cflags) -o$@ $(EXT)/nhinet.c
+ 
+ # src dependencies
+ 
+diff -aur jnethack/sys/unix/Makefile.src report/sys/unix/Makefile.src
+--- jnethack/sys/unix/Makefile.src	Sat Jul 12 03:53:25 2003
++++ report/sys/unix/Makefile.src	Thu Mar  6 16:09:20 2003
+@@ -56,6 +56,11 @@
+ JSRC = ../japanese/jconj.c ../japanese/jtrns.c ../japanese/jlib.c
+ JOBJ = jconj.o jtrns.o jlib.o
+ 
++#NH extension by issei(99/11/10)
++#EXTSRC = ../extension/nhbuf.c ../extension/nhinet.c \
++#	../extension/extension.c
++#EXTOBJ = nhbuf.o nhinet.o extension.o
++
+ # if you are using gcc as your compiler:
+ #	uncomment the CC definition below if it's not in your environment
+ #	if you get setcgtty() warnings during execution, you are feeding gcc
+@@ -350,10 +355,10 @@
+ WINCXXSRC = $(WINQTSRC) $(WINBESRC)
+ 
+ # .c files for this version (for date.h)
+-VERSOURCES = $(HACKCSRC) $(JSRC) $(SYSSRC) $(WINSRC) $(GENCSRC)
++VERSOURCES = $(HACKCSRC) $(JSRC) $(EXTSRC) $(SYSSRC) $(WINSRC) $(GENCSRC)
+ 
+ # .c files for all versions using this Makefile (for lint and tags)
+-CSOURCES = $(HACKCSRC) $(JSRC) $(SYSSRC) $(WINCSRC) $(GENCSRC)
++CSOURCES = $(HACKCSRC) $(JSRC) $(EXTSRC) $(SYSSRC) $(WINCSRC) $(GENCSRC)
+ 
+ 
+ # all .h files except date.h, onames.h, pm.h, and vis_tab.h which would
+@@ -391,7 +396,7 @@
+ 	steal.o steed.o teleport.o timeout.o topten.o track.o trap.o u_init.o \
+ 	uhitm.o vault.o vision.o vis_tab.o weapon.o were.o wield.o windows.o \
+ 	wizard.o worm.o worn.o write.o zap.o \
+-	$(RANDOBJ) $(JOBJ) $(SYSOBJ) $(WINOBJ) version.o
++	$(RANDOBJ) $(EXTOBJ) $(JOBJ) $(SYSOBJ) $(WINOBJ) version.o
+ # the .o files from the HACKCSRC, SYSSRC, and WINSRC lists
+ 
+ $(GAME):	$(SYSTEM)
+@@ -699,6 +704,12 @@
+ 	$(CC) $(CFLAGS) -c ../japanese/jtrns.c
+ jlib.o: ../japanese/jlib.c  ../include/hack.h
+ 	$(CC) $(CFLAGS) -c ../japanese/jlib.c
++nhbuf.o: ../extension/nhbuf.c  ../include/hack.h
++	$(CC) $(CFLAGS) -c ../extension/nhbuf.c
++nhinet.o: ../extension/nhinet.c  ../include/hack.h
++	$(CC) $(CFLAGS) -c ../extension/nhinet.c
++extension.o: ../extension/extension.c  ../include/hack.h
++	$(CC) $(CFLAGS) -c ../extension/extension.c
+ gtk.o: ../win/gtk/gtk.c ../include/hack.h ../include/winGTK.h
+ 	$(CC) $(CFLAGS) -c ../win/gtk/gtk.c
+ gtkgetlin.o: ../win/gtk/gtkgetlin.c ../include/hack.h ../include/winGTK.h
+diff -aur jnethack/sys/winnt/Makefile.bcc report/sys/winnt/Makefile.bcc
+--- jnethack/sys/winnt/Makefile.bcc	Sat Jul 12 03:54:31 2003
++++ report/sys/winnt/Makefile.bcc	Thu Mar  6 16:41:00 2003
+@@ -117,6 +117,7 @@
+ WIN32 = ..\win\win32 # window port files (Win32)
+ WSHR  = ..\win\share # Tile support files 
+ JP    = ..\japanese
++EXT   = ..\extention
+ 
+ #
+ #  Object directory.
+@@ -1328,6 +1329,9 @@
+ $(O)jlib.o: $(JP)\jlib.c $(HACK_H)
+ $(O)jconj.o: $(JP)\jconj.c $(HACK_H)
+ $(O)jtrns.o: $(JP)\jtrns.c $(HACK_H) $(INCL)\jdata.h
++$(O)extension.o: $(EXT)\extension.c $(HACK_H)
++$(O)nhbuf.o: $(EXT)\nhbuf.c $(HACK_H)
++$(O)nhinet.o: $(EXT)\nhinet.c $(HACK_H)
+ 
+ # end of file
+ 
+diff -aur jnethack/sys/winnt/Makefile.msc report/sys/winnt/Makefile.msc
+--- jnethack/sys/winnt/Makefile.msc	Sat Jul 12 03:55:56 2003
++++ report/sys/winnt/Makefile.msc	Thu Mar  6 17:13:37 2003
+@@ -63,6 +63,7 @@
+ WIN32 = ..\win\win32 # window port files (Win32)
+ WSHR  = ..\win\share # Tile support files 
+ JP    = ..\japanese  # JP
++EXT   = ..\extension # Extension
+ 
+ #
+ #  Object directory.
+@@ -286,6 +287,13 @@
+ 	@$(CC) $(CFLAGS)  -Fo$@ $<
+ 
+ #==========================================
++# Rules for files in extension
++#==========================================
++
++{$(EXT)}.c{$(OBJ)}.o:
++	@$(CC) $(CFLAGS)  -Fo$@ $<
++
++#==========================================
+ # Rules for files in win\win32
+ #==========================================
+ 
+@@ -378,6 +386,7 @@
+ VOBJ26 = $(O)wield.o    $(O)windows.o  $(O)wizard.o   $(O)worm.o    
+ VOBJ27 = $(O)worn.o     $(O)write.o    $(O)zap.o     
+ JOBJ   = $(O)jlib.o     $(O)jtrns.o    $(O)jconj.o
++#EXOBJ = $(O)extension.o $(O)nhbuf.o   $(O)nhinet.o
+ 
+ DLBOBJ = $(O)dlb.o
+ 
+@@ -397,7 +406,7 @@
+ 
+ VVOBJ  = $(O)version.o
+ 
+-ALLOBJ  = $(WINPOBJ) $(SOBJ) $(DLBOBJ)  $(TTYOBJ) $(WOBJ) $(OBJS) $(VVOBJ) $(JOBJ)
++ALLOBJ  = $(WINPOBJ) $(SOBJ) $(DLBOBJ)  $(TTYOBJ) $(WOBJ) $(OBJS) $(VVOBJ) $(JOBJ) # $(EXOBJ)
+ 
+ !IF "$(GRAPHICAL)" == "Y"
+ OPTIONS_FILE = $(DAT)\guioptions
+@@ -1377,5 +1386,13 @@
+ $(O)jlib.o:    $(PCH) $(JP)\jlib.c $(HACK_H)
+ $(O)jconj.o:   $(PCH) $(JP)\jconj.c $(HACK_H)
+ $(O)jtrns.o:   $(PCH) $(JP)\jtrns.c $(HACK_H) $(INCL)\jdata.h
++
++#
++# from extension
++#
++
++$(O)nhinet.o:  $(PCH) $(EXT)\nhinet.c $(HACK_H)
++$(O)nhbuf.o:  $(PCH) $(EXT)\nhbuf.c $(HACK_H)
++$(O)extension.o:  $(PCH) $(EXT)\extension.c $(HACK_H)
+ 
+ # end of file
