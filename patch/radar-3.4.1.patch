@@ -1,0 +1,443 @@
+diff -urN nethack-3.4.1.orig/include/config.h nethack-3.4.1/include/config.h
+--- nethack-3.4.1.orig/include/config.h	2003-08-27 15:35:49.000000000 +0900
++++ nethack-3.4.1/include/config.h	2003-08-27 15:19:44.000000000 +0900
+@@ -136,6 +136,7 @@
+ #  define GRAPHIC_TOMBSTONE	/* Use graphical tombstone (rip.xpm) */
+ #  define X11LARGETILE		/* Large tile for X11 */
+ # endif
++#define RADAR			/* Display radar */
+ #endif
+ 
+ 
+diff -urN nethack-3.4.1.orig/include/flag.h nethack-3.4.1/include/flag.h
+--- nethack-3.4.1.orig/include/flag.h	2003-02-23 23:43:20.000000000 +0900
++++ nethack-3.4.1/include/flag.h	2003-08-27 15:19:44.000000000 +0900
+@@ -65,6 +65,9 @@
+ 	boolean  pickup;	/* whether you pickup or move and look */
+ 
+ 	boolean  pushweapon;	/* When wielding, push old weapon into second slot */
++#ifdef RADAR
++	boolean	radar;
++#endif
+ 	boolean  rest_on_space; /* space means rest */
+ 	boolean  safe_dog;	/* give complete protection to the dog */
+ #ifdef EXP_ON_BOTL
+diff -urN nethack-3.4.1.orig/include/winX.h nethack-3.4.1/include/winX.h
+--- nethack-3.4.1.orig/include/winX.h	2003-08-27 15:35:49.000000000 +0900
++++ nethack-3.4.1/include/winX.h	2003-08-27 15:20:01.000000000 +0900
+@@ -281,6 +281,9 @@
+     int     tombtext_dx;	/* x-displacement between tombstone line */
+     int     tombtext_dy;	/* y-displacement between tombstone line */
+ #endif
++#ifdef RADAR
++    Boolean radar;
++#endif
+ } AppResources;
+ 
+ E AppResources appResources;
+@@ -332,6 +335,9 @@
+ E void FDECL(create_map_window,(struct xwindow*, BOOLEAN_P, Widget));
+ E void FDECL(destroy_map_window,(struct xwindow*));
+ E int  FDECL(x_event,(int));
++#ifdef RADAR
++E void FDECL(dismiss_radar,(Widget, XEvent*, String*, Cardinal*));
++#endif
+ 
+ /* ### winmenu.c ### */
+ E void FDECL(menu_delete, (Widget, XEvent*, String*, Cardinal*));
+diff -urN nethack-3.4.1.orig/src/options.c nethack-3.4.1/src/options.c
+--- nethack-3.4.1.orig/src/options.c	2003-08-27 15:35:50.000000000 +0900
++++ nethack-3.4.1/src/options.c	2003-08-27 15:20:16.000000000 +0900
+@@ -148,6 +148,9 @@
+ 	{"prayconfirm", &flags.prayconfirm, TRUE, SET_IN_GAME},
+ 	{"preload_tiles", &iflags.wc_preload_tiles, TRUE, DISP_IN_GAME},	/*WC*/
+ 	{"pushweapon", &flags.pushweapon, FALSE, SET_IN_GAME},
++#ifdef RADAR
++	{ "radar", &flags.radar, FALSE, SET_IN_GAME},
++#endif
+ #if defined(MICRO) && !defined(AMIGA)
+ 	{"rawio", &iflags.rawio, FALSE, DISP_IN_GAME},
+ #else
+diff -urN nethack-3.4.1.orig/win/X11/winX.c nethack-3.4.1/win/X11/winX.c
+--- nethack-3.4.1.orig/win/X11/winX.c	2003-08-27 15:35:51.000000000 +0900
++++ nethack-3.4.1/win/X11/winX.c	2003-08-27 15:19:44.000000000 +0900
+@@ -950,6 +950,9 @@
+ #ifdef GRAPHIC_TOMBSTONE
+     {"rip_dismiss_text",rip_dismiss_text},/* action for rip in text widget */
+ #endif
++#ifdef RADAR
++    {"dismiss_radar",	dismiss_radar},
++#endif
+     {"menu_key",	menu_key},	/* action for menu accelerators */
+     {"yn_key",		yn_key},	/* action for yn accelerators */
+     {"yn_delete",	yn_delete},	/* action for yn delete-window */
+@@ -1003,6 +1006,10 @@
+       XtOffset(AppResources *,tombtext_dx), XtRString, "0" },
+     { "tombtext_dy", "Tombtext_dy", XtRInt, sizeof(int),
+       XtOffset(AppResources *,tombtext_dy), XtRString, "13" },
++# ifdef RADAR	/* 機能してません */
++    { "radar", "Radar", XtRBoolean, sizeof(Boolean),
++      XtOffset(AppResources *, radar), XtRString, "True" },
++# endif
+ #endif
+ };
+ 
+@@ -2132,6 +2139,9 @@
+ 
+     direction=atoi(params[0]);
+ 
++#ifdef RADAR
++    viewport = XtNameToWidget(toplevel, "*map_viewport");
++#endif
+     horiz_sb = XtNameToWidget(viewport, "*horizontal");
+     vert_sb  = XtNameToWidget(viewport, "*vertical");
+ 
+diff -urN nethack-3.4.1.orig/win/X11/winmap.c nethack-3.4.1/win/X11/winmap.c
+--- nethack-3.4.1.orig/win/X11/winmap.c	2003-08-27 15:35:51.000000000 +0900
++++ nethack-3.4.1/win/X11/winmap.c	2003-08-27 15:33:30.000000000 +0900
+@@ -71,6 +71,56 @@
+ static void FDECL(get_char_info, (struct xwindow *));
+ static void FDECL(display_cursor, (struct xwindow *));
+ 
++#ifdef RADAR
++
++#define RADAR_WIDTH	(80 * 4)
++#define RADAR_HEIGHT	(24 * 4)
++
++#define USE_RADAR	(map_info->is_tile)
++static int	radar_is_popuped;
++static int	radar_is_initialized;
++
++static Widget	radar;
++static int	radar_x, radar_y;
++static int	radar_w, radar_h;
++
++static Widget	radar_popup;
++static Window	radar_window;
++static Pixmap	radar_pixmap;
++static Pixmap	radar_pixmap2;
++static GC	radar_gc_black;
++static GC	radar_gc_white;
++static GC	radar_gc[16];
++
++static XColor	radar_color[16] = {
++  {0, 0x0000, 0x0000, 0x0000,},	/* black */
++  {0, 0xffff, 0xffff, 0xffff,},	/* white */
++  {0, 0xffff, 0x0000, 0x0000,},	/* red */
++  {0, 0x0000, 0xffff, 0x0000,},	/* green */
++  {0, 0x0000, 0x0000, 0xffff,},	/* blue */
++  {0, 0xffff, 0xffff, 0x0000,},	/* yellow */
++  {0, 0xffff, 0x0000, 0xffff,},	/* magenta */
++  {0, 0x8000, 0x8000, 0x8000,},	/* gray */
++  {0, 0xffff, 0x8000, 0x0000,},	/* orange */
++  {0, 0x0000, 0x8000, 0x0000,},	/* dark green */
++  {0, 0x0000, 0xffff, 0xffff,},	/* cyan */
++};
++enum {
++  RADAR_BLACK,
++  RADAR_WHITE,
++  RADAR_RED,
++  RADAR_GREEN,
++  RADAR_BLUE,
++  RADAR_YELLOW,
++  RADAR_MAGENTA,
++  RADAR_GRAY,
++  RADAR_ORANGE,
++  RADAR_DARKGREEN,
++  RADAR_CYAN,
++};
++
++#endif /*RADAR*/
++
+ #ifdef X11LARGETILE
+ struct pxm_slot_t {
+     int fg;
+@@ -367,6 +417,9 @@
+ # endif
+ 
+     if (errorcode != XpmSuccess) {
++#ifdef RADAR
++	    USE_RADAR = 0;
++#endif
+ 	if (errorcode == XpmColorFailed) {
+ 	    Sprintf(buf, "Insufficient colors available to load %s.",
+ 		    appResources.tile_file);
+@@ -638,6 +691,34 @@
+     return result;
+ }
+ 
++#ifdef RADAR
++void
++check_sb(struct xwindow *wp)
++{
++    Arg arg[2];
++    Widget viewport, horiz_sb, vert_sb;
++    float top, shown;
++
++    viewport = XtParent(wp->w);
++    horiz_sb = XtNameToWidget(viewport, "horizontal");
++    vert_sb  = XtNameToWidget(viewport, "vertical");
++
++    if (horiz_sb) {
++	XtSetArg(arg[0], XtNshown,	&shown);
++	XtSetArg(arg[1], XtNtopOfThumb, &top);
++	XtGetValues(horiz_sb, arg, TWO);
++	radar_x = top * RADAR_WIDTH;
++	radar_w = shown * RADAR_WIDTH;
++    }
++    if (vert_sb) {
++	XtSetArg(arg[0], XtNshown,      &shown);
++	XtSetArg(arg[1], XtNtopOfThumb, &top);
++	XtGetValues(vert_sb, arg, TWO);
++	radar_y = top * RADAR_HEIGHT;
++	radar_h = shown * RADAR_HEIGHT;
++    }
++}
++#endif
+ 
+ /*
+  * Make sure the map's cursor is always visible.
+@@ -670,6 +751,10 @@
+ 	XtSetArg(arg[0], XtNshown,	&shown);
+ 	XtSetArg(arg[1], XtNtopOfThumb, &top);
+ 	XtGetValues(horiz_sb, arg, TWO);
++#ifdef RADAR
++	radar_x = top * RADAR_WIDTH;
++	radar_w = shown * RADAR_WIDTH;
++#endif
+ 
+ 	/* [ALI] Don't assume map widget is the same size as actual map */
+ 	cursor_middle = (wp->cursx + 0.5) * wp->map_information->square_width /
+@@ -718,6 +803,10 @@
+ 	XtSetArg(arg[0], XtNshown,      &shown);
+ 	XtSetArg(arg[1], XtNtopOfThumb, &top);
+ 	XtGetValues(vert_sb, arg, TWO);
++#ifdef RADAR
++	radar_y = top * RADAR_HEIGHT;
++	radar_h = shown * RADAR_HEIGHT;
++#endif
+ 
+ 	cursor_middle = (wp->cursy + 0.5) * wp->map_information->square_height /
+ 	  wp->pixel_height;
+@@ -1319,6 +1408,74 @@
+     int row;
+     register int count;
+ 
++#ifdef RADAR
++    Arg args[16];
++    Cardinal num_args;
++    Dimension width, height;
++    int depth;
++    Display *dpy;
++    XGCValues gcval;
++    Colormap cmap;
++
++    dpy = XtDisplay(radar);
++
++    if(USE_RADAR){
++      int i;
++    
++      if(flags.radar && !radar_is_popuped){
++	  XtPopup(radar_popup, XtGrabNone);
++	  radar_is_popuped = TRUE;
++      }
++      if(!flags.radar && radar_is_popuped){
++	  XtPopdown(radar_popup);
++	  radar_is_popuped = FALSE;
++      }
++
++      if(!radar_is_initialized){
++	  radar_is_initialized = TRUE;
++
++	  XtRealizeWidget(radar_popup);
++
++	  num_args = 0;
++	  XtSetArg(args[num_args], XtNwidth, &width); ++num_args;
++	  XtSetArg(args[num_args], XtNheight, &height); ++num_args;
++
++	  XtGetValues(radar, args, num_args);
++	  depth = DefaultDepth(dpy, DefaultScreen(dpy));
++	  radar_window = XtWindow(radar);
++	  radar_pixmap = XCreatePixmap(dpy, radar_window,
++				       width, height, depth);
++	  radar_pixmap2 = XCreatePixmap(dpy, radar_window,
++					width, height, depth);
++	  
++	  num_args = 0;
++	  XtSetArg(args[num_args], XtNbackgroundPixmap, radar_pixmap); num_args++;
++	  XtSetValues(radar, args, num_args);
++	  
++	  num_args = 0;
++	  XtSetArg(args[num_args], XtNcolormap, &cmap); num_args++;
++	  XtGetValues(radar, args, num_args);
++	  
++	  gcval.function = GXcopy;
++	  for(i=0 ; i<16 ; ++i){
++	      XAllocColor(dpy, cmap, &radar_color[i]);
++	      
++	      gcval.foreground = radar_color[i].pixel;
++	      radar_gc[i] = XCreateGC(dpy, radar_window, 
++				      GCFunction | GCForeground,
++				      &gcval);
++	  }
++	  radar_gc_black = radar_gc[RADAR_BLACK];
++	  radar_gc_white = radar_gc[RADAR_WHITE];
++
++	  XFillRectangle(dpy, radar_pixmap,
++			 radar_gc_black, 0, 0, width, height);
++	  XFillRectangle(dpy, radar_pixmap2,
++			 radar_gc_black, 0, 0, width, height);
++      }
++    }
++#endif /*RADAR*/
++
+     if (start_row < 0 || stop_row >= ROWNO) {
+ 	impossible("map_update:  bad row range %d-%d\n", start_row, stop_row);
+ 	return;
+@@ -1451,6 +1608,63 @@
+ /*ITA*/
+                 }
+ #endif /* X11LARGETILE */
++# ifdef RADAR
++		if(tile_pixmap && USE_RADAR){
++#  define RADAR_MONSTER	RADAR_YELLOW
++#  define RADAR_HUMAN	RADAR_WHITE
++#  define RADAR_OBJECT	RADAR_BLUE
++
++#  define RADAR_WALL	RADAR_GRAY
++#  define RADAR_FLOOR	RADAR_DARKGREEN
++#  define RADAR_DOOR	RADAR_ORANGE
++#  define RADAR_LADDER	RADAR_MAGENTA
++#  define RADAR_WATER	RADAR_BLUE
++#  define RADAR_TRAP	RADAR_RED
++
++		  int c;
++		  c = RADAR_BLACK;
++		  if(tile < 340)	    /* Monster check	*/
++		    c = RADAR_MONSTER;
++		  else if(tile < 393)	    /* Human check	*/
++		    c = RADAR_HUMAN;
++		  else if(tile < 822)	    /* Object check	*/
++		    c = RADAR_OBJECT;
++		  else if(tile < 829)	    /* Floor check	*/
++		    c = RADAR_GRAY;
++		  else if(tile < 829 + 1)   /* Blank check	*/
++		    ;
++		  else if(tile < 829 + 12)  /* Wall check	*/
++		    c = RADAR_WALL;
++		  else if(tile < 829 + 15)  /* Floor & OpenDoor check	    */
++		    c = RADAR_FLOOR;
++		  else if(tile < 829 + 19)  /* Door & Ironbars & Tree check */
++		    c = RADAR_DOOR;
++		  else if(tile < 829 + 22)  /* Floor check	*/
++		    c = RADAR_FLOOR;
++		  else if(tile < 829 + 26)  /* Ladder check	*/
++		    c = RADAR_LADDER;
++		  else if(tile < 829 + 31)  /* EtcObject check	*/
++		    c = RADAR_BLUE;
++		  else if(tile < 829 + 32)  /* WaterFloor check	*/
++		    c = RADAR_WATER;
++		  else if(tile < 829 + 33)  /* BlockFloor check	*/
++		    c = RADAR_GRAY;
++		  else if(tile < 829 + 34)  /* FireFloor check	*/
++		    c = RADAR_ORANGE;
++		  else if(tile < 829 + 38)  /* Bridge check	*/
++		    c = RADAR_ORANGE;
++		  else if(tile < 829 + 41)  /* Floor check	*/
++		    c = RADAR_CYAN;
++		  else if(tile < 829 + 63)  /* Trap check	*/
++		    c = RADAR_TRAP;
++		  else if(tile < 829 + 146) /* effect check	*/
++		    c = RADAR_YELLOW;
++ 		  else
++		    c = RADAR_WALL;
++		  XFillRectangle(dpy, radar_pixmap2, radar_gc[c],
++				 cur_col * 4, row * 4, 4, 4);
++		}
++# endif /*RADAR*/
+ 
+ 		if (glyph_is_pet(glyph) && iflags.hilite_pet) {
+ 		    /* draw pet annotation (a heart) */
+@@ -1489,6 +1703,19 @@
+ 		map_info->square_width-1,
+ 		map_info->square_height-1);
+ 	}
++#ifdef RADAR
++	if(USE_RADAR){
++	  XCopyArea(dpy, radar_pixmap2, radar_pixmap, radar_gc_black,
++		    0, 0, RADAR_WIDTH, RADAR_HEIGHT, 0, 0);
++	  check_sb(wp);
++	  XDrawRectangle(dpy, radar_pixmap, radar_gc_white,
++			 radar_x, radar_y,
++			 radar_w, radar_h);
++	  XCopyArea(dpy, radar_pixmap, radar_window, radar_gc_black,
++		    0, 0, RADAR_WIDTH, RADAR_HEIGHT, 0, 0);
++	  XRaiseWindow(dpy, XtWindow(radar_popup));
++	}
++#endif
+     } else {
+ 	struct text_map_info_t *text_map = map_info->mtype.text_map;
+ 
+@@ -1599,6 +1826,28 @@
+  <Key>:		input()	\
+ ";
+ 
++#ifdef RADAR
++static char radar_translations[] =
++"#override\n\
++ <Key>Left: scroll(4)\n\
++ <Key>Right: scroll(6)\n\
++ <Key>Up: scroll(8)\n\
++ <Key>Down: scroll(2)\n\
++ <Key>Escape: dismiss_radar()\n\
++ <Key>: input()\
++";
++#endif
++
++#ifdef RADAR
++void
++dismiss_radar(Widget w, XEvent*ev , String *s, Cardinal*n)
++{
++    XtPopdown(radar_popup);
++    flags.radar = FALSE;
++    radar_is_popuped = FALSE;
++}
++#endif
++
+ /*
+  * The map window creation routine.
+  */
+@@ -1617,6 +1866,33 @@
+     int screen_width, screen_height;
+ #endif
+ 
++#ifdef RADAR
++    num_args = 0;
++    XtSetArg(args[num_args], XtNwidth, RADAR_WIDTH); num_args++;
++    XtSetArg(args[num_args], XtNheight, RADAR_HEIGHT); num_args++;
++
++    radar_popup = XtCreatePopupShell("radar",
++				     /*
++				     trainsientShellWidgetClass,
++				     */
++				     topLevelShellWidgetClass,
++				     toplevel, args, num_args);
++
++    num_args = 0;
++    /*
++    XtSetArg(args[num_args], XtNsensitive, False); num_args++;
++    */
++    XtSetArg(args[num_args], XtNlabel, ""); num_args++;
++    XtSetArg(args[num_args], XtNtranslations,
++	     XtParseTranslationTable(radar_translations));	num_args++;
++
++    radar = XtCreateManagedWidget("radar",
++				  labelWidgetClass,
++				  radar_popup,		
++				  args,			
++				  num_args);
++#endif
++
+     wp->type = NHW_MAP;
+ 
+     if (create_popup) {
