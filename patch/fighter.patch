@@ -1,0 +1,1114 @@
+diff -aurN -xCVS old/dat/Fighter.des jnethack/dat/Fighter.des
+--- old/dat/Fighter.des	Thu Jan  1 09:00:00 1970
++++ jnethack/dat/Fighter.des	Sun Apr 28 20:26:32 2002
+@@ -0,0 +1,325 @@
++#	SCCS Id: @(#)Arch.des	3.2	91/12/13
++#	Copyright (c) 1989 by Jean-Christophe Collet
++#	Copyright (c) 1991 by M. Stephenson
++# NetHack may be freely redistributed.  See license for details.
++#
++#	The "start" level for the quest.
++#
++MAZE: "Fig-strt",' '
++FLAGS: noteleport,hardfloor
++GEOMETRY:center,center
++#         1    1    2    2    3    3    4    4    5    5    6    6    7    7
++#1   5    0    5    0    5    0    5    0    5    0    5    0    5    0    5
++MAP
++.........}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}...........
++.......}}}---------....................................---------}}}.........
++......}}..........---................................---.......---}.........
++......}--...........---------..---...-------------.---......................
++......}|.............S..............................S.............|}........
++......}--...........-----------------+----------------...........--}........
++......}}---.......---...........|.........|..........---.......-.-}}........
++.......}}}----.----.....---------....\....--------.....----S----}.}.........
++.........}}}|...|.......|........................|.......|...|}}}...........
++...........}|...|.......|................................|...|}.............
++...........}|...|.......|........................|.......|...|}.............
++.........}}}|...|.......|........................|.......|...|}}}...........
++.......}}}----S----.....|........................|.....----S----}}}.........
++......}}---.......---...|........................|...---.......---}}........
++......}--...........--..-----------------..--.----..--...........--}........
++......}|.............|}}}}}}}}}}}}}}}}}}}}.}}}..}}}}}..............|}.......
++......}--...........--}............................}--...........--}........
++......}}---.......---}}............................}}---.......---}}........
++.......}}}----..---}}}..............................}}}--.--..--}}}.........
++.........}}}}}}}}}}}..................................}}}}}}}}}}}...........
++ENDMAP
++# Dungeon Description
++REGION:(00,00,75,19),lit,"ordinary"
++# Stairs
++STAIR:(62,17),down
++# Portal arrival point
++BRANCH:(42,17,42,17),(0,0,0,0)
++# Doors
++DOOR:locked,(14,12)
++DOOR:locked,(59,12)
++DOOR:locked,(59,7)
++DOOR:locked,(52,4)
++DOOR:locked,(21,4)
++DOOR:locked,(37,5)
++# Princess Serenity
++MONSTER:'@',"Princess of Moon",(37,7)
++# Chest
++OBJECT:'(',"chest",(11,14)
++OBJECT:'(',"chest",(11,16)
++OBJECT:'(',"chest",(16,14)
++OBJECT:'(',"chest",(16,16)
++# Eight Sailor Fighters
++MONSTER:'@',"planetary fighter",(29,8)
++MONSTER:'@',"planetary fighter",(29,13)
++MONSTER:'@',"planetary fighter",(39,8)
++MONSTER:'@',"planetary fighter",(39,13)
++MONSTER:'@',"planetary fighter",(14,15)
++MONSTER:'@',"planetary fighter",(14,4)
++MONSTER:'@',"planetary fighter",(59,4)
++MONSTER:'@',"planetary fighter",(59,15)
++#
++DRAWBRIDGE:(37,15),north,closed
++# Non diggable walls
++NON_DIGGABLE:(00,00,75,19)
++# Random traps
++TRAP:"pit",random
++TRAP:"pit",random
++TRAP:"pit",random
++TRAP:"pit",random
++TRAP:"pit",random
++# Monsters on siege duty.
++MONSTER: 'Z',random,(70,09)
++MONSTER: 'Z',random,(70,10)
++MONSTER: 'Z',random,(70,11)
++MONSTER: 'Z',random,(70,12)
++MONSTER: 'Z',random,(70,13)
++MONSTER: 'Z',random,(70,14)
++MONSTER: 'S',random,(25,17)
++MONSTER: 'S',random,(25,18)
++MONSTER: 'S',random,(25,19)
++MONSTER: 'S',random,(26,17)
++MONSTER: 'S',random,(26,18)
++MONSTER: 'S',random,(26,19)
++
++#
++#	The "locate" level for the quest.
++#
++
++MAZE: "Fig-loca",' '
++FLAGS: hardfloor
++GEOMETRY:center,center
++#         1    1    2    2    3    3    4    4    5    5    6    6    7    7
++#1   5    0    5    0    5    0    5    0    5    0    5    0    5    0    5
++MAP
++------------------------------------------------------------------------....
++|----------------------................................................|....
++||....................|................................................|....
++||....................|-----...........................................|....
++||....................+....|...........................................|....
++||....................|....|................................................
++||....................|-----................................................
++||....................|.....................................................
++|-----------------++---................................................|....
++|................|..|..................................................|....
++|-----------------++-------------------------------------....----------|....
++||.....................................................................|....
++||----------++------------++------------++------------++------------++-|....
++||.............|.............|.............|.............|.............|....
++||.............|.............|.............|.............|.............|....
++||.............|.............|.............|.............|.............|....
++||.............|.............|.............|.............|.............|....
++------------------------------------------------------------------------....
++ENDMAP
++# Dungeon Description
++REGION:(00,00,75,17),lit,"ordinary"
++REGION:(01,11,71,17),unlit,"ordinary"
++REGION:(01,01,22,08),unlit,"temple"
++# Doors
++DOOR:closed,(22,4)
++DOOR:closed,(18,8)
++DOOR:closed,(19,8)
++DOOR:closed,(18,10)
++DOOR:closed,(19,10)
++#DOOR:closed,(68,10)
++#DOOR:closed,(69,10)
++DOOR:closed,(12,12)
++DOOR:closed,(13,12)
++DOOR:closed,(26,12)
++DOOR:closed,(27,12)
++DOOR:closed,(40,12)
++DOOR:closed,(41,12)
++DOOR:closed,(54,12)
++DOOR:closed,(55,12)
++DOOR:closed,(68,12)
++DOOR:closed,(69,12)
++# Stairs
++STAIR:(25,5),down
++STAIR:(71,6),up
++# Non diggable walls
++NON_DIGGABLE:(00,00,75,17)
++# Objects
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++# Random traps
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++# Random monsters.
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++#
++ALTAR:(10,04),chaos,altar
++#
++ENGRAVING:(21,04),engrave,"体育用具室"
++ENGRAVING:(13,11),engrave,"理科室"
++ENGRAVING:(55,11),engrave,"廊下は静かに"
++#
++OBJECT:'!',random,(2,13)
++OBJECT:'!',random,(3,13)
++OBJECT:'!',random,(4,13)
++OBJECT:'!',random,(2,14)
++OBJECT:'!',random,(3,14)
++OBJECT:'!',random,(4,14)
++OBJECT:'!',random,(2,15)
++OBJECT:'!',random,(3,15)
++OBJECT:'!',random,(4,15)
++#
++#	The "goal" level for the quest.
++#
++#	Here you meet Minion of Huhetol your nemesis monster.  You have to
++#	defeat Minion of Huhetol in combat to gain the artifact you have
++#	been assigned to retrieve.
++#
++
++MAZE: "Fig-goal", ' '
++FLAGS: hardfloor
++GEOMETRY:center,center
++#         1    1    2    2    3
++#1   5    0    5    0    5    0
++MAP
++-------------------------------
++|.............................|
++|.............................|
++|.........LLLLLLLLLLL.........|
++|........L...........L........|
++|.......L.............L.......|
++|.......L.............L.......|
++|.......L.............L.......|
++|.......L.............L.......|
++|.......L.............L.......|
++|.......L.............L.......|
++|........L...........L........|
++|.........LLLL...LLLL.........|
++|.............................|
++|.............................|
++-------------------------------
++ENDMAP
++# Dungeon Description
++REGION:(00,00,30,15),lit,"ordinary"
++# Stairs
++STAIR:(29,14),up
++# Non diggable walls
++NON_DIGGABLE:(00,00,30,15)
++# Objects
++OBJECT:'*',"dilithium crystal",(15,7),blessed,0,"The Silver Crystal"
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++OBJECT:random,random,random
++# Random traps
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++TRAP:random,random
++# Random monsters.
++MONSTER:'@',"Jedeite",(15,7)
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'S',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++MONSTER:'Z',random,random
++
++#
++#	The "fill" levels for the quest.
++#
++
++MAZE: "Fig-fila" , ' '
++INIT_MAP: '.' , ' ' , true , true , lit, false
++NOMAP
++STAIR:random, up
++STAIR:random, down
++#
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++
++MAZE: "Fig-filb" , 'L'
++INIT_MAP: '.' , 'L' , true , true , lit, false
++NOMAP
++STAIR:random, up
++STAIR:random, down
++#
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'Z', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++MONSTER: 'S', random, random
++
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
++TRAP: random, random
+diff -aurN -xCVS old/dat/jdata.base jnethack/dat/jdata.base
+--- old/dat/jdata.base	Sat Dec  7 00:38:41 2002
++++ jnethack/dat/jdata.base	Fri Dec  6 02:45:26 2002
+@@ -3956,6 +3956,21 @@
+ 	て，長びかせることで悪名高かった．実は，好戦的な天狗が人間に
+ 	初めて武器の使い方を教えたとも云われる．
+ 	[ Mythical Beasts, by Deirdre Headon (The Leprechaun Library) ]
++幻の銀水晶
++the silver crystal
++	−−あなたしかいないの！
++	「幻の銀水晶」の真の力を使って
++	あれを封印できるのは
++	プリンセス！あなただけなの！
++	....
++	プリンセス・セレニティ−−おぼえておいて
++	「幻の銀水晶」はすべてあなたの心しだいなの
++	強い信念と協調 そして深い愛情
++	それがないと−−悪魔(サタン)であるあれを消し去ることはできない
++	プリンセスであり 正義の戦士
++	セーラームーンであることに
++	誇りと自信を どうか もって
++		[ 美少女戦士セーラームーン 第3巻，武内直子，講談社 ]
+ トート
+ thoth
+ 	エジプトの月と智恵の神．トートは法律および科学，医学，幾何学を
+diff -aurN -xCVS old/dat/jquest.txt jnethack/dat/jquest.txt
+--- old/dat/jquest.txt	Sat Dec  7 00:45:28 2002
++++ jnethack/dat/jquest.txt	Mon Jul 22 01:04:33 2002
+@@ -1242,6 +1242,227 @@
+ 「魔除けを献上せよ．%dが迎えてくれるだろう！」
+ %E
+ #
++#	Fighter
++#
++%Cc Fig 00001
++あなたは突然見覚えのある場所に立っているのに気がついた．間違いないここ
++は%Hである．しかし何かが違う．まるで何か激しい戦闘が
++あったかのように殺伐としている．まるで廃虚だ．
++
++%lの元へ急がねばと本能的にあなたは感じた．
++%E
++%Cp Fig 00002
++もう一度，あなたは%Hに戻った．
++%E
++%Cp Fig 00003
++あなたは%Hに戻った．
++あなたは，もう時間がないと本能で察した
++%E
++%Cp Fig 00005
++「気をつけて！%nの力は以前とは比べものにならないわ．」
++%E
++%Cp Fig 00006
++「%nが%oの真の力を得れば世界は闇に閉ざされる．
++  急いで！」
++%E
++%Cp Fig 00007
++「私たちは%Hを守るだけで精一杯なの．もうあなたに頼るしか
++  ないわ．」
++%E
++%Cp Fig 00008
++「%oなしでは%lはその力の半分も発揮できない．
++  一体どうすれば．．．」
++%E
++%Cp Fig 00009
++「このような時にあの人さえいてくれれば．．．」
++%E
++%Cp Fig 00010
++%E
++%Cp Fig 00011
++%E
++%Cp Fig 00012
++%E
++%Cp Fig 00013
++%E
++%Cp Fig 00014
++%E
++%Cc Fig 00015
++「戻ってきてくれたのね，%p．あなたは正義感が強いから
++  きっと帰ってくると思ってたわ．
++「ご覧の通り%Hは散々たる状態なの．お願いだから私たち
++  といっしょに戦ってちょうだい？」
++%E
++%Cp Fig 00016
++「また来てくれたのね，%p．
++  いっしょに戦ってくれるの？」
++%E
++%Cp Fig 00017
++「もう時間がないわ．
++  いっしょに戦ってくれるの？」
++%E
++%Cc Fig 00018
++「もうおしまいだわ，%p．この世は時期，全てが闇にのまれるわ．
++  何もかもおしまい．．．．
++
++  あたしもエナジーを吸い取られ，闇の塵と消えてしまうわ．これも
++  宿命なのね．．．」
++%E
++%Cc Fig 00019
++「でもね%p．あなたはまだちょっと未熟だわ．
++  %rでは死に急ぐようなものよ．気持ちはわかるけど
++  %Rくらいじゃないと．．．」
++%E
++%Cc Fig 00020
++「%p．どうしてなの？
++
++「%aの道からはずれたことをしてたって，幸せにはなれないわ．お願い！
++  目をさまして！」
++%E
++%Cc Fig 00021
++「今世界は絶滅の危機に瀕しているの%p．
++
++「復活した%nが%oを盗み%iに
++  逃げ込んだわ．彼は%oのエナジーを用いて，全世界に妖魔を
++  送り込もうとしている．
++
++「あたしは今自分に残された力と全ての仲間たちの力を用いて世界が闇に閉ざされる
++  のを防いでいるけど，%oがない状態でどこまで頑張れるか自信が
++  ないの．
++
++「%iへ続く闇の回廊の封印を今解きます．
++  お願い%iに行って%nを倒して！世界はあなたにかかって
++  いるのよ！お願い！」
++%E
++%Cp Fig 00025
++「%nは強いわ！気をつけてね！」
++%E
++%Cp Fig 00026
++「%iに行くまでが大変よ！」
++%E
++%Cp Fig 00027
++「ここは私たちに任せて！」
++%E
++%Cp Fig 00028
++「きっと%dが守ってくれるわ！信じて！」
++%E
++%Cp Fig 00029
++「%nは一体何を考えているのかしら？」
++%E
++%Cp Fig 00030
++「%oは強力なパワーを持っているの．あんなのが
++  %nの手にわたったら．．．」
++%E
++%Cp Fig 00031
++「%Hを守るのがあたし達の任務．」
++%E
++%Cp Fig 00032
++「そうよね？泣いている場合じゃないのよね！」
++%E
++%Cp Fig 00033
++「あぁ，あの人さえいてくれれば．．．」
++%E
++%Cp Fig 00034
++「生きてかえってきてね．%p．」
++%E
++%Cp Fig 00035
++あなたは回廊を抜け%iまでやってきた．目の前に見覚えのある
++風景が広がる！ここはあなたの母校だ！しかし，どこにも生徒のいる気配はない！
++
++不気味なうめき声が体育館のほうから聞こえた．あなたは覚悟を決めて
++学校の正門に向った．
++%E
++%Cp Fig 00036
++もう一度，あなたは%iまでやってきた．
++%E
++%Cp Fig 00040
++あなたは%oの存在を感じた．
++%E
++%Cp Fig 00041
++%oの存在が空気を通してつたわってきた．
++%E
++%Cc Fig 00050
++「来たな！%cよ，私は以前の私とは違うぞ．
++  %oを得てエナジーがみなぎっているからな．
++
++「さあ，全力で来い！%cへの恨みをこの場ではらしてやる．」
++%E
++%Cc Fig 00051
++「性懲りもなくまたやってきたか%cよ．
++
++「%oはもはや我が手中にある．
++
++「こんどこそお前の魂をあの世に送ってやろう．」
++%E
++%Cp Fig 00052
++「しぶといやつめ！今度こそあの世に送ってやる！」
++%E
++%Cp Fig 00053
++「くそ！抜かった！%oを返せ！」
++%E
++%Cp Fig 00060
++「さあこい%c！」
++%E
++%Cp Fig 00061
++「%oの力とくと見せてやろう！」
++%E
++%Cp Fig 00062
++「%cおそるにたりず！」
++%E
++%Cp Fig 00063
++「やめておけ！」
++%E
++%Cp Fig 00064
++「おまえのエナジーも吸い取ってやる！」
++%E
++%Cp Fig 00065
++「おまえの力はそんなものか？」
++%E
++%Cp Fig 00066
++「はははは！そんな力で俺を倒そうとは！」
++%E
++%Cp Fig 00067
++「%lでなければ俺は倒せん！」
++%E
++%Cp Fig 00068
++「こんなやつしかいないとは%cも落ちたものだ！」
++%E
++%Cp Fig 00069
++「死ね！%cよ．」
++%E
++%Cc Fig 00070
++%oの力が体に注がれた！なんと素晴らしいパワーなのだ！
++あなたは%lの元へ道を急いだ！
++%E
++%Cp Fig 00080
++「この私が．．．．」
++
++断末魔の叫びとともに%nの体は崩れ落ちた．
++%E
++%Cc Fig 00081
++%lは微笑み軽く%oに触れた．
++
++「頑張ったわね%p．これで%nの危機はなくなったわ．
++
++「でも%oはあたしよりあなたにふさわしいと思うの．
++  だから持っていって．あたしなら大丈夫．だって心強い仲間がいるんで
++  すもの」
++%E
++%Cc Fig 00082
++%lは%oをなんとか掴み，あなたに返した．
++
++「%oはあなたのものよ．
++  魔除け探索を再開するのに使ってね．
++%E
++%Cp Fig 00090
++「お久しぶり%p．あたしたちは相変わらずよ．」
++%E
++%Cc Fig 00091
++「おめでとう%p！まさか魔除けまで手に入れるなんて」
++
++「魔除けを持って精霊界へいくといいわ．そして%dの祭壇に
++  ささげるの．応援しているからね．」
++%E
++#
+ #	Healer
+ #
+ %Cc Hea 00001
+diff -aurN -xCVS old/dat/jtrnsmon.dat jnethack/dat/jtrnsmon.dat
+--- old/dat/jtrnsmon.dat	Sat Dec  7 01:00:30 2002
++++ jnethack/dat/jtrnsmon.dat	Sat Dec  7 01:00:51 2002
+@@ -521,6 +521,7 @@
+ Barbarian:		野蛮人:
+ Caveman:		洞窟人:
+ Cavewoman:		洞窟人:
++Fighter:		戦士:
+ Healer:			薬師:
+ Knight:			騎士:
+ Monk:			武闘家:
+@@ -537,6 +538,7 @@
+ caveman:		洞窟人:
+ cavewoman:		洞窟人:
+ elf:			エルフ:
++fighter:		戦士:
+ healer:			薬師:
+ knight:			騎士:
+ monk:			武闘家:
+@@ -554,6 +556,7 @@
+ Lord Carnarvon:		ケナーヴェン卿:
+ Pelias:			ピーリエス:
+ Shaman Karnov:		呪術師カルノフ:
++Princess of Moon:	プリンセス:
+ Hippocrates:		ヒポクラテス:
+ King Arthur:		アーサー王:
+ Grand Master:		総師範:
+@@ -570,6 +573,7 @@
+ Minion of Huhetotl:	フヘトトルの使い:
+ Thoth Amon:		トート・アモン:
+ Chromatic Dragon:	クロマティック・ドラゴン:
++Jedeite:		ジェダイト:
+ Cyclops:		サイクロプス:
+ Ixoth:			イクソス:
+ Master Kaen:		カエン:
+@@ -586,6 +590,7 @@
+ student:		学生:
+ chieftain:		首領:
+ neanderthal:		ネアンデルタール人:
++planetary fighter:	守護戦士:
+ attendant:		随行員:
+ page:			小姓:
+ abbot:			師範:
+@@ -611,6 +616,9 @@
+ Anu:			アヌ:
+ Ishtar:			イシュタル:
+ Anshar:			アンシャル:
++Selene:			セレネ:
++Helios:			ヘリオス:
++Eos:			エオス:
+ Athena:			アテナ:
+ Hermes:			ヘルメス:
+ Poseidon:		ポセイドン:	
+diff -aurN -xCVS old/dat/jtrnsobj.dat jnethack/dat/jtrnsobj.dat
+--- old/dat/jtrnsobj.dat	Sat Dec  7 00:59:47 2002
++++ jnethack/dat/jtrnsobj.dat	Sat Dec  7 00:59:19 2002
+@@ -183,6 +183,7 @@
+ ]crude ring mail:	粗末な鉄環の鎧:
+ ]leather armor:		革鎧:
+ ]leather jacket:	革の服:
++]sailor blouse:		セーラー服:
+ #
+ #	cloaks
+ #
+@@ -831,6 +832,8 @@
+ AThe Heart of Ahriman:		アーリマンの心臓:
+ # C
+ AThe Sceptre of Might:		権力の笏:
++# F
++AThe Silver Crystal:		幻の銀水晶:
+ # H
+ AThe Staff of Aesculapius:	アエスキュラピスの杖:
+ # K
+diff -aurN -xCVS old/include/artilist.h jnethack/include/artilist.h
+--- old/include/artilist.h	Sat Dec  7 00:26:29 2002
++++ jnethack/include/artilist.h	Mon Apr 29 04:33:43 2002
+@@ -176,6 +176,15 @@
+ 	TAMING,		A_CHAOTIC, NON_PM , PM_ELF, 8000L ),
+ #endif
+ 
++#ifdef FIGHTER
++A("The Silver Crystal",			DILITHIUM_CRYSTAL,
++	(SPFX_NOGEN|SPFX_RESTR|SPFX_INTEL),
++		(SPFX_ESP|SPFX_REGEN|SPFX_DBONUS), 0,
++	NO_ATTK,	NO_DFNS,	CARY(AD_MAGM),
++	HEALING,	A_LAWFUL,	'F' ),
++#endif
++
++
+ A("The Staff of Aesculapius",	QUARTERSTAFF,
+ 	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK|SPFX_INTEL|SPFX_DRLI|SPFX_REGEN), 0,0,
+ 	DRLI(0,0),	DRLI(0,0),	NO_CARY,
+diff -aurN -xCVS old/include/config.h jnethack/include/config.h
+--- old/include/config.h	Sat Dec  7 00:26:31 2002
++++ jnethack/include/config.h	Sun Nov  3 20:42:55 2002
+@@ -150,6 +150,7 @@
+ 
+ #ifdef JNETHACK
+ /*#define NEWBIE*/		/* more verbose for newbie */
++#define FIGHTER		/* Sailor Fighter with sailor blouse */
+ /*#define NH_EXTENSION*/	/* Some extension for game */
+ #define XI18N
+ #define INSTALLCOLORMAP
+diff -aurN -xCVS old/src/attrib.c jnethack/src/attrib.c
+--- old/src/attrib.c	Sat Dec  7 00:27:46 2002
++++ jnethack/src/attrib.c	Wed Dec  4 06:37:01 2002
+@@ -67,6 +67,10 @@
+ 		     {	15, &(HWarning), "敏感になった", "鈍感になった" },
+ #endif
+ 		     {	 0, 0, 0, 0 } },
++#ifdef FIGHTER
++	fig_abil[] = { {	7, &(HFast),  "素早さを得た", "遅くなった" },
++		     {	 0, 0, 0, 0 } },
++#endif
+ 
+ 	hea_abil[] = { {	 1, &(HPoison_resistance), "", "" },
+ /*JP
+@@ -653,6 +657,9 @@
+ 	case PM_ARCHEOLOGIST:   abil = arc_abil;	break;
+ 	case PM_BARBARIAN:      abil = bar_abil;	break;
+ 	case PM_CAVEMAN:        abil = cav_abil;	break;
++#ifdef FIGHTER
++	case PM_FIGHTER:	abil = fig_abil;	break;
++#endif
+ 	case PM_HEALER:         abil = hea_abil;	break;
+ 	case PM_KNIGHT:         abil = kni_abil;	break;
+ 	case PM_MONK:           abil = mon_abil;	break;
+diff -aurN -xCVS old/src/do_wear.c jnethack/src/do_wear.c
+--- old/src/do_wear.c	Sat Dec  7 00:28:31 2002
++++ jnethack/src/do_wear.c	Wed Dec  4 06:37:01 2002
+@@ -631,6 +631,16 @@
+ int
+ Armor_on()
+ {
++#ifdef FIGHTER
++  switch(uarm->otyp) {
++  case SAILOR_BLOUSE:
++      if(flags.female/* || Role_is('F'*/)
++	  ;
++      else
++	  curse(uarm);
++      break;
++  }
++#endif
+     return 0;
+ }
+ 
+@@ -1730,6 +1740,9 @@
+ 	} else {
+ 		if(is_cloak(otmp)) (void) Cloak_on();
+ /*		if(is_shield(otmp)) (void) Shield_on(); */
++#ifdef FIGHTER
++		if(otmp == uarm) (void) Armor_on();
++#endif
+ 		on_msg(otmp);
+ 	}
+ 	takeoff_mask = taking_off = 0L;
+diff -aurN -xCVS old/src/dog.c jnethack/src/dog.c
+--- old/src/dog.c	Sat Dec  7 00:28:46 2002
++++ jnethack/src/dog.c	Wed Dec  4 06:37:01 2002
+@@ -160,6 +160,9 @@
+ 	    if(Role_if(PM_SAMURAI)) petname = "ハチ公";
+ 	    if(Role_if(PM_BARBARIAN)) petname = "イデフィクス";
+ 	    if(Role_if(PM_RANGER)) petname = "シリウス";
++#ifdef FIGHTER
++	    if(Role_if(PM_FIGHTER)) petname = rn2(2) ? "ルナ" : "アルテミス";
++#endif
+ #endif /*JP*/
+ 	}
+ 
+diff -aurN -xCVS old/src/makemon.c jnethack/src/makemon.c
+--- old/src/makemon.c	Sat Dec  7 00:29:09 2002
++++ jnethack/src/makemon.c	Wed Dec  4 06:37:01 2002
+@@ -1040,6 +1040,42 @@
+ 	    mtmp->minvent = (struct obj *)0;    /* caller expects this */
+ 	}
+ 
++#ifdef FIGHTER
++	if(ptr == &mons[PM_PLANETARY_FIGHTER]){
++	  static int uniq_num = 0;
++	  const char *cn;
++/*戦士は全て女性で惑星の名前を持つ*/
++	  mtmp->female = 1;
++	  switch(uniq_num){
++	  case 0:
++	    cn = "マーキュリー";
++	    break;
++	  case 1:
++	    cn = "ヴィーナス";
++	    break;
++	  case 2:
++	    cn = "マーズ";
++	    break;
++	  case 3:
++	    cn = "ジュピター";
++	    break;
++	  case 4:
++	    cn = "ウラヌス";
++	    break;
++	  case 5:
++	    cn = "ネプチューン";
++	    break;
++	  case 6:
++	    cn = "プルート";
++	    break;
++	  default:
++	    cn = "サターン";
++	    break;
++	  }
++	  ++uniq_num;
++	  christen_monst(mtmp, cn);
++	}
++#endif
+ 	if ((ptr->mflags3 & M3_WAITMASK) && !(mmflags & MM_NOWAIT)) {
+ 		if (ptr->mflags3 & M3_WAITFORU)
+ 			mtmp->mstrategy |= STRAT_WAITFORU;
+diff -aurN -xCVS old/src/monst.c jnethack/src/monst.c
+--- old/src/monst.c	Sat Dec  7 00:30:06 2002
++++ jnethack/src/monst.c	Wed Dec  4 06:37:01 2002
+@@ -2947,6 +2947,16 @@
+ 	M1_HUMANOID|M1_OMNIVORE,
+ 	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_FEMALE|M2_COLLECT, M3_INFRAVISIBLE,
+ 	HI_DOMESTIC),
++#ifdef FIGHTER
++    MON("fighter", S_HUMAN,
++	LVL(10, 12, 10, 2, 3), G_NOGEN,
++	A(ATTK(AT_WEAP, AD_PHYS, 1, 8),
++	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
++	SIZ(WT_ELF, 350, 0, MS_HUMANOID, MZ_HUMAN), 0, 0,
++	M1_HUMANOID|M1_OMNIVORE,
++	M2_NOPOLY|M2_HUMAN|M2_STRONG|M2_COLLECT, 0, HI_DOMESTIC),
++#endif
++
+     MON("healer", S_HUMAN,
+ 	LVL(10, 12, 10, 1, 0), G_NOGEN,
+ 	A(ATTK(AT_WEAP, AD_PHYS, 1, 6),
+@@ -3085,6 +3095,17 @@
+ 	  M2_FEMALE|M2_COLLECT|M2_MAGIC,
+ 	M3_CLOSE|M3_INFRAVISION|M3_INFRAVISIBLE, HI_LORD),
+ #endif
++#ifdef FIGHTER
++    MON("Princess of Moon", S_HUMAN,
++	LVL(20, 15, 0, 80, 20), (G_NOGEN|G_UNIQ),
++	A(ATTK(AT_WEAP, AD_PHYS, 1, 8),
++	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
++	SIZ(WT_HUMAN, 400, 0, MS_LEADER, MZ_HUMAN), MR_COLD, 0,
++	M1_HUMANOID|M1_OMNIVORE,
++	M2_NOPOLY|M2_HUMAN|M2_PEACEFUL|M2_STRONG|M2_FEMALE|
++	  M2_COLLECT|M2_MAGIC,
++	M3_CLOSE, HI_LORD),
++#endif
+     MON("Hippocrates", S_HUMAN,
+ 	LVL(20, 12, 0, 40, 0), (G_NOGEN|G_UNIQ),
+ 	A(ATTK(AT_WEAP, AD_PHYS, 1, 6),
+@@ -3229,6 +3250,17 @@
+ 	  M2_GREEDY|M2_JEWELS|M2_COLLECT|M2_MAGIC,
+ 	M3_WANTSARTI|M3_WAITFORU|M3_INFRAVISION|M3_INFRAVISIBLE, HI_LORD),
+ #endif
++#ifdef FIGHTER
++    MON("Jedeite", S_HUMAN,
++	LVL(15, 10, 10, 0, -15), (G_NOGEN|G_UNIQ),
++	A(ATTK(AT_WEAP, AD_PHYS, 2, 6), ATTK(AT_WEAP, AD_PHYS, 2, 6),
++	  ATTK(AT_CLAW, AD_SAMU, 1, 6), NO_ATTK, NO_ATTK, NO_ATTK),
++	SIZ(750, 350, 0, MS_NEMESIS, MZ_HUMAN), 0, 0,
++	M1_HUMANOID|M1_OMNIVORE,
++	M2_NOPOLY|M2_ORC|M2_HOSTILE|M2_STRONG|M2_STALK|M2_NASTY|M2_MALE|
++	  M2_GREEDY|M2_JEWELS|M2_COLLECT|M2_MAGIC,
++	M3_WANTSARTI|M3_WAITFORU, HI_LORD),
++#endif
+     MON("Cyclops", S_GIANT,
+ 	LVL(18, 12, 0, 0, -15), (G_NOGEN|G_UNIQ),
+ 	A(ATTK(AT_WEAP, AD_PHYS, 4, 8), ATTK(AT_WEAP, AD_PHYS, 4, 8),
+@@ -3358,6 +3390,15 @@
+ 	M1_HUMANOID|M1_SEE_INVIS|M1_OMNIVORE,
+ 	M2_NOPOLY|M2_ELF|M2_PEACEFUL|M2_COLLECT,
+ 	M3_INFRAVISION|M3_INFRAVISIBLE, HI_DOMESTIC),
++#endif
++#ifdef FIGHTER
++    MON("planetary fighter", S_HUMAN,
++	LVL(5, 12, 10, 10, 7), G_NOGEN,
++	A(ATTK(AT_WEAP, AD_PHYS, 2, 4), ATTK(AT_MAGC, AD_CLRC, 0, 0),
++	  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK),
++	SIZ(WT_HUMAN, 350, 0, MS_GUARDIAN, MZ_HUMAN), MR_SLEEP, MR_SLEEP,
++	M1_HUMANOID|M1_SEE_INVIS|M1_OMNIVORE,
++	M2_NOPOLY|M2_HUMAN|M2_PEACEFUL|M2_COLLECT, 0, HI_DOMESTIC),
+ #endif
+     MON("attendant", S_HUMAN,
+ 	LVL(5, 12, 10, 10, 3), G_NOGEN,
+diff -aurN -xCVS old/src/mplayer.c jnethack/src/mplayer.c
+--- old/src/mplayer.c	Sat Dec  7 00:30:21 2002
++++ jnethack/src/mplayer.c	Wed Dec  4 06:37:01 2002
+@@ -188,6 +188,11 @@
+ 		    else if (rn2(2)) weapon = CLUB;
+ 		    if (helm == HELM_OF_BRILLIANCE) helm = STRANGE_OBJECT;
+ 		    break;
++#ifdef FIGHTER
++		case PM_FIGHTER:
++		    weapon = SHORT_SWORD;
++		    break;
++#endif
+ 		case PM_HEALER:
+ 		    if (rn2(4)) weapon = QUARTERSTAFF;
+ 		    else if (rn2(2)) weapon = rn2(2) ? UNICORN_HORN : SCALPEL;
+diff -aurN -xCVS old/src/objects.c jnethack/src/objects.c
+--- old/src/objects.c	Sat Dec  7 00:31:13 2002
++++ jnethack/src/objects.c	Wed Dec  4 06:37:01 2002
+@@ -388,10 +388,19 @@
+ 	1, 0, 0, 0,	72, 5, 250, 100,  7, 0, ARM_SUIT, IRON, HI_METAL),
+ ARMOR("orcish ring mail", "crude ring mail",
+ 	0, 0, 0, 0,	20, 5, 250,  80,  8, 1, ARM_SUIT, IRON, CLR_BLACK),
++#ifdef FIGHTER
++ARMOR("leather armor", (char *)0,
++	1, 0, 0, 0,	70, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
++#else
+ ARMOR("leather armor", (char *)0,
+ 	1, 0, 0, 0,	82, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
++#endif
+ ARMOR("leather jacket", (char *)0,
+ 	1, 0, 0, 0,	12, 0,	30,  10,  9, 0, ARM_SUIT, LEATHER, CLR_BLACK),
++#ifdef FIGHTER
++ARMOR("sailor blouse", (char *)0,
++	1, 0, 0, 0,	12, 0,	30, 200,  7, 0, ARM_SUIT, CLOTH, CLR_WHITE),
++#endif
+ 
+ 
+ #ifdef TOURIST
+diff -aurN -xCVS old/src/role.c jnethack/src/role.c
+--- old/src/role.c	Sat Dec  7 00:31:54 2002
++++ jnethack/src/role.c	Wed Dec  4 06:37:01 2002
+@@ -148,6 +148,36 @@
+ 	{  1, 0,  0, 1,  0, 1 },10,	/* Energy */
+ 	0, 12, 0, 1,  8, A_INT, SPE_DIG,             -4
+ },
++#ifdef FIGHTER
++{	{"Fighter", 0}, 
++	{"戦士", 0}, {
++	{"マーキュリー",0},
++	{"ビーナス",	0},
++	{"マーズ",	0},
++	{"ジュピター",	0},
++	{"サターン",	0},
++	{"ウラヌス",	0},
++	{"ネプチューン",0},
++	{"プルート",	0},
++	{"ムーン",	0} },
++	"Selene", "Helios", "Eos",
++	"Fig", "月の宮殿",
++	    "地球",
++	PM_FIGHTER, NON_PM, PM_KITTEN,
++	 PM_PRINCESS_OF_MOON, PM_PLANETARY_FIGHTER, PM_JEDEITE,
++    	PM_EARTH_ELEMENTAL, PM_SNAKE, S_SNAKE, S_ZOMBIE,
++	ART_SILVER_CRYSTAL,
++	MH_HUMAN | ROLE_FEMALE |
++	  ROLE_LAWFUL| ROLE_CHAOTIC,
++	/* Str Int Wis Dex Con Cha */
++	{  10, 10,  6, 12, 12, 18 },
++	{  30, 10, 10, 20, 20, 10 },
++	/* Init   Lower  Higher */
++	{ 12, 0,  0, 8,  1, 0 },	/* Hit points */
++	{  2, 2,  0, 2,  0, 2 },10,	/* Energy */
++	0, 1, 1, 10, 20, A_CHA, SPE_CHARM_MONSTER, -4
++},
++#endif
+ {	{"Healer", 0}, 
+ 	{"薬師", 0}, {
+ #if 0 /*JP*/
+diff -aurN -xCVS old/src/shk.c jnethack/src/shk.c
+--- old/src/shk.c	Sat Dec  7 00:32:43 2002
++++ jnethack/src/shk.c	Wed Dec  4 06:37:01 2002
+@@ -2187,6 +2187,14 @@
+ 		} else if (!(obj->o_id % 4)) /* arbitrarily impose surcharge */
+ 		    tmp += tmp / 3L;
+ 	}
++#ifdef FIGHTER
++	if (obj->otyp == SAILOR_BLOUSE){
++	  if (!flags.female)
++	    tmp *= 15;
++	  else
++	    tmp *= 10;
++	}
++#endif
+ #ifdef TOURIST
+ 	if ((Role_if(PM_TOURIST) && u.ulevel < (MAXULEV/2))
+ 	    || (uarmu && !uarm && !uarmc))	/* touristy shirt visible */
+@@ -2313,6 +2321,16 @@
+ {
+ 	long tmp = getprice(obj, TRUE) * obj->quan;
+ 
++#ifdef FIGHTER
++	if (obj->otyp == SAILOR_BLOUSE){
++	    if (flags.female/* && Role_is('F')*/)
++		tmp *= 10;
++	    else if (flags.female)
++		tmp *= 5;
++/*	    else if (!Role_is('F'))
++	    tmp = 0;*/
++	}
++#endif
+ #ifdef TOURIST
+ 	if ((Role_if(PM_TOURIST) && u.ulevel < (MAXULEV/2))
+ 	    || (uarmu && !uarm && !uarmc))	/* touristy shirt visible */
+diff -aurN -xCVS old/src/u_init.c jnethack/src/u_init.c
+--- old/src/u_init.c	Sat Dec  7 00:33:22 2002
++++ jnethack/src/u_init.c	Wed Dec  4 06:37:01 2002
+@@ -55,6 +55,15 @@
+ 	{ LEATHER_ARMOR, 0, ARMOR_CLASS, 1, UNDEF_BLESS },
+ 	{ 0, 0, 0, 0, 0 }
+ };
++#ifdef FIGHTER
++static struct trobj Fighter[] = {
++	{ SHORT_SWORD, 2, WEAPON_CLASS, 1, 1 },
++	{ SAILOR_BLOUSE, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
++	{ WAN_POLYMORPH, UNDEF_SPE, WAND_CLASS, 1, UNDEF_BLESS },
++	{ UNDEF_TYP, UNDEF_SPE, SCROLL_CLASS, 3, UNDEF_BLESS },
++	{ 0, 0, 0, 0, 0 }
++};
++#endif /* FIGHTER */
+ static struct trobj Healer[] = {
+ 	{ SCALPEL, 0, WEAPON_CLASS, 1, UNDEF_BLESS },
+ 	{ LEATHER_GLOVES, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
+@@ -303,6 +312,21 @@
+     { P_NONE, 0 }
+ };
+ 
++#ifdef FIGHTER
++static struct def_skill Skill_F[] = {
++    { P_DAGGER, P_EXPERT },		{ P_KNIFE, P_SKILLED },
++    { P_SHORT_SWORD, P_EXPERT },	{ P_BROAD_SWORD, P_EXPERT },
++    { P_LONG_SWORD, P_SKILLED },	{ P_TWO_HANDED_SWORD, P_BASIC },
++    { P_SCIMITAR, P_SKILLED },		{ P_SABER, P_SKILLED },
++    { P_SPEAR, P_EXPERT },		{ P_JAVELIN, P_BASIC },
++    { P_BOW, P_EXPERT },		{ P_SLING, P_BASIC },
++    { P_CROSSBOW, P_BASIC },		{ P_SHURIKEN, P_BASIC },
++    { P_TWO_WEAPON_COMBAT, P_EXPERT },	{ P_MARTIAL_ARTS, 3 },
++    { P_ENCHANTMENT_SPELL, P_SKILLED },
++    { P_NONE, 0 }
++};
++#endif /* FIGHTER */
++
+ static struct def_skill Skill_H[] = {
+     { P_DAGGER, P_SKILLED },		{ P_KNIFE, P_EXPERT },
+     { P_SHORT_SWORD, P_SKILLED },	{ P_SCIMITAR, P_BASIC },
+@@ -628,6 +652,15 @@
+ 		ini_inv(Cave_man);
+ 		skill_init(Skill_C);
+ 		break;
++#ifdef FIGHTER
++	case PM_FIGHTER:
++		u.uen = u.uenmax += rn1(4, 1);
++		ini_inv(Fighter);
++		skill_init(Skill_F);
++		knows_class(WEAPON_CLASS);
++		knows_class(ARMOR_CLASS);
++		break;
++#endif
+ 	case PM_HEALER:
+ #ifndef GOLDOBJ
+ 		u.ugold = u.ugold0 = rn1(1000, 1001);
+diff -aurN -xCVS old/src/weapon.c jnethack/src/weapon.c
+--- old/src/weapon.c	Sat Dec  7 00:33:54 2002
++++ jnethack/src/weapon.c	Wed Dec  4 06:37:01 2002
+@@ -1360,6 +1360,12 @@
+ 		P_SKILL(P_ATTACK_SPELL) = P_BASIC;
+ 		P_SKILL(P_ENCHANTMENT_SPELL) = P_BASIC;
+ 	}
++/*JP*/
++#ifdef FIGHTER
++	else if(Role_if(PM_FIGHTER)){
++		P_SKILL(P_ENCHANTMENT_SPELL) = P_BASIC;
++	}
++#endif
+ 
+ 	/* walk through array to set skill maximums */
+ 	for (; class_skill->skill != P_NONE; class_skill++) {
+diff -aurN -xCVS old/sys/msdos/Makefile.GCC jnethack/sys/msdos/Makefile.GCC
+--- old/sys/msdos/Makefile.GCC	Sat Dec  7 00:35:57 2002
++++ jnethack/sys/msdos/Makefile.GCC	Mon Sep 16 04:20:35 2002
+@@ -961,6 +961,7 @@
+ 	lev_comp tourist.des
+ 	lev_comp valkyrie.des
+ 	lev_comp wizard.des
++#	lev_comp fighter.des
+ 	cd $(SRC)
+ 	echo sp_levs done > sp_lev.tag
+ 	
+diff -aurN -xCVS old/sys/unix/Makefile.dat jnethack/sys/unix/Makefile.dat
+--- old/sys/unix/Makefile.dat	Sat Dec  7 00:36:24 2002
++++ jnethack/sys/unix/Makefile.dat	Tue May  7 17:36:53 2002
+@@ -104,7 +104,7 @@
+ quest_levs: ../util/lev_comp \
+ 	Arch.des Barb.des Caveman.des Healer.des Knight.des Monk.des \
+ 	Priest.des Ranger.des Rogue.des Samurai.des Tourist.des Valkyrie.des \
+-	Wizard.des
++	Wizard.des Fighter.des
+ 	../util/lev_comp Arch.des
+ 	../util/lev_comp Barb.des
+ 	../util/lev_comp Caveman.des
+@@ -118,6 +118,7 @@
+ 	../util/lev_comp Tourist.des
+ 	../util/lev_comp Valkyrie.des
+ 	../util/lev_comp Wizard.des
++	../util/lev_comp Fighter.des
+ 	touch quest_levs
+ 
+ dungeon: dungeon.def ../util/makedefs ../util/dgn_comp
+diff -aurN -xCVS old/sys/winnt/Makefile.msc jnethack/sys/winnt/Makefile.msc
+--- old/sys/winnt/Makefile.msc	Sat Dec  7 00:36:52 2002
++++ jnethack/sys/winnt/Makefile.msc	Mon Jul 22 01:04:33 2002
+@@ -534,6 +534,7 @@
+ 	$(U)lev_comp tourist.des
+ 	$(U)lev_comp valkyrie.des
+ 	$(U)lev_comp wizard.des
++	$(U)lev_comp fighter.des
+ 	cd $(SRC)
+ 	echo sp_levs done > $(O)sp_lev.tag
+ 
+diff -aurN -xCVS old/util/makedefs.c jnethack/util/makedefs.c
+--- old/util/makedefs.c	Sat Dec  7 00:34:51 2002
++++ jnethack/util/makedefs.c	Mon Jul 22 01:04:33 2002
+@@ -701,6 +701,9 @@
+ #ifdef EXP_ON_BOTL
+ 		"experience points on status line",
+ #endif
++#ifdef FIGHTER
++		"fighter",
++#endif
+ #ifdef MFLOPPY
+ 		"floppy drive support",
+ #endif
