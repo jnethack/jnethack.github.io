@@ -1,0 +1,1211 @@
+diff -aurN jnethack/extension/extension.c report/extension/extension.c
+--- jnethack/extension/extension.c	Thu Jan  1 09:00:00 1970
++++ report/extension/extension.c	Wed Jun 25 22:03:57 2003
+@@ -0,0 +1,334 @@
++/*
++**
++**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**
++*/
++
++/* Copyright (c) Issei Numata 1994-2000 */
++/* JNetHack may be freely redistributed.  See license for details. */
++
++#include <stdio.h>
++#include <stdarg.h>
++#include <ctype.h>
++#include "hack.h"
++
++#include "patchlevel.h"
++#ifdef JNETHACK
++#include "../japanese/jpatchlevel.h"
++#endif
++
++#ifndef WIN32
++# include <sys/utsname.h>
++#else
++# include <winsock.h>
++#endif
++
++#include <fcntl.h>
++
++static void
++http_read(int sd, NHBUF *data)
++{
++    int len;
++    char buf[4096];
++
++    while((len = soc_read(sd, buf, 4096)) > 0){
++	nh_buf_append(data, buf, len);
++    }
++}
++
++static void
++http_post(int sd, char *url, NHBUF *data)
++{
++    NHBUF *output;
++
++    output = nh_buf_new();
++    nh_buf_sprintf(
++	output, "POST %s HTTP/1.0\r\n", url);
++	  
++    nh_buf_sprintf(
++	output, "User-Agent: JNetHack-%d.%d.%d.%d\r\n",
++	JVERSION_MAJOR, JVERSION_MINOR,
++	JPATCHLEVEL, JEDITLEVEL);
++	  
++    nh_buf_sprintf(output, "Content-Length: %d\r\n", data->size);
++    nh_buf_sprintf(output, "Content-Encoding: binary\r\n");
++    nh_buf_sprintf(output, "Content-Type: application/octet-stream\r\n");
++    nh_buf_sprintf(output, "\r\n");
++    nh_buf_append(output, data->data, data->size);
++
++    soc_write(sd, output->data, output->size);
++}
++
++#define	ht_append	nh_buf_append
++#define ht_sprintf	nh_buf_sprintf
++
++#if 0
++NHBUF *
++ht_append(NHBUF *b, char *data, size_t size)
++{
++    NHBUF		*ret;
++    unsigned char	*p;
++    char		tmp[10];
++
++    p = data;
++    for( ; p < (unsigned char *)(data) + size ; ){
++	if(*p >= '0' && *p <= '9' ){
++	    ret = nh_buf_append(b, p, 1);
++	    if(!ret)
++		return NULL;
++	    ++p;
++	}
++	else if(*p >= 'A' && *p <= 'Z' ){
++	    ret = nh_buf_append(b, p, 1);
++	    if(!ret)
++		return NULL;
++	    ++p;
++	}
++	else if(*p >= 'a' && *p <= 'z' ){
++	    ret = nh_buf_append(b, p, 1);
++	    if(!ret)
++		return NULL;
++	    ++p;
++	}
++	else{
++	    sprintf(tmp, "%%%02X", *p);
++	    ret = nh_buf_append(b, tmp, 3);
++	    if(!ret)
++		return NULL;
++
++	    ++p;
++	}
++    }
++
++    return b;
++}
++
++NHBUF *
++ht_sprintf(NHBUF *b, const char *fmt, ...)
++{
++    char		*tmpbuf;
++
++    va_list	ap;
++    va_start(ap, fmt);
++    vasprintf(&tmpbuf, fmt, ap);
++    va_end(ap);
++
++    ht_append(b, tmpbuf, strlen(tmpbuf));
++
++    free(tmpbuf);
++    return b;
++}
++#endif
++
++static void
++ht_version(NHBUF *b)
++{
++    ht_sprintf(b, "version: %d\n", REPORTSCORE_VER);
++    ht_sprintf(b, "nethack version: %d %d %d %d\n", 
++	      VERSION_MAJOR, VERSION_MINOR,
++	      PATCHLEVEL, EDITLEVEL);
++    ht_sprintf(b, "jnethack version: %d %d %d %d\n", 
++	      JVERSION_MAJOR, JVERSION_MINOR,
++	      JPATCHLEVEL, JEDITLEVEL);
++}
++
++#ifdef JNETHACK
++#define IC ((unsigned char)("漢"[0])==0x8a)
++#endif
++
++static void
++ht_encode(NHBUF *b)
++{
++#ifdef JNETHACK
++    if(IC){
++	ht_sprintf(b, "encode: x-sjis\n");
++    }
++    else{
++	ht_sprintf(b, "encode: euc-jp\n");
++    }
++#else
++	ht_sprintf(b, "encode: us-ascii\n");
++#endif
++}
++
++static void
++ht_uname(NHBUF *b)
++{
++#ifndef WIN32
++    struct utsname nm;
++#else
++    OSVERSIONINFO osvi;
++#endif
++
++#ifndef WIN32
++    uname(&nm);
++    
++    ht_sprintf(b, "sysname: %s\n", nm.sysname);
++    ht_sprintf(b, "release: %s\n", nm.release);
++    ht_sprintf(b, "machine: %s\n", nm.machine);
++#else
++    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
++    GetVersionEx(&osvi);
++    if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
++	ht_sprintf(b, "sysname: win32(95/98)\n");
++    } else if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
++	ht_sprintf(b, "sysname: win32(95/98)\n");
++    } else {
++	ht_sprintf(b, "sysname: win32(95/98)\n");
++    }
++    
++    ht_sprintf(b, "release: %d.%d\n", osvi.dwMajorVersion, osvi.dwMinorVersion);
++    ht_sprintf(b, "machine: i586\n");
++#endif
++}
++
++static void
++ht_endian(NHBUF *b)
++{
++    static const int tmp[2] = {0x31323334, 0};
++
++    ht_sprintf(b, "endian: %s\n", (const char *)tmp);
++}
++
++void
++report_score(char *action, char *linebuf)
++{
++#ifdef WIN32
++    WSADATA wsaData;
++    WORD wVersionRequested =(WORD) (( 1) |  ( 1 << 8));
++#endif
++
++    int c;
++    int sd;
++    NHBUF *score;
++
++    score = nh_buf_new();
++
++    ht_version(score);
++    ht_encode(score);
++    ht_uname(score);
++   
++    ht_sprintf(score, "character: %s\n",
++	      jtrns_mon(pl_character, flags.female));
++    ht_sprintf(score, "race: %s\n", urace.noun);
++    ht_sprintf(score, "align: %s\n", aligns[1-u.ualign.type].noun);
++    ht_sprintf(score, "female: %d\n", flags.female);
++    ht_sprintf(score, "name: %s\n", plname);
++    ht_sprintf(score, "score: %d\n", (int)u.urexp);
++    ht_sprintf(score, "action: %s\n", action);
++    ht_sprintf(score, "uz: %d\n", depth(&u.uz));
++    ht_sprintf(score, "level: %d\n", u.ulevel);
++    ht_sprintf(score, "maxhp: %d\n", u.uhpmax);
++    ht_sprintf(score, "deepest: %d\n", deepest_lev_reached(TRUE));
++    ht_sprintf(score, "gold: %d\n", (int)u.ugold);
++    ht_sprintf(score, "moves: %d\n", (int)moves);
++    ht_sprintf(score, "dying message: %s\n", linebuf);
++    ht_sprintf(score, "homeurl: %s\n", get_homeurl());
++    
++#ifdef WIN32
++    if(WSAStartup(wVersionRequested, &wsaData)){
++	raw_printf("Report: WSAStartup failed.");
++	goto report_end;
++    }
++#endif
++
++    while((sd = connect_scoreserver()) < 0) {
++	raw_printf("Report: %s", soc_err());
++	if (WIN_MESSAGE == WIN_ERR)
++	    WIN_MESSAGE = create_nhwindow(NHW_MESSAGE);
++	c = yn_function("スコアサーバーとの接続に失敗しました。再度接続を試みますか？",ynqchars,'y');
++	if(c != 'y')
++	    goto report_end;
++    }
++    http_post(sd, SCORE_PATH, score);
++
++    disconnect_server(sd);
++report_end:
++#ifdef WIN32
++    WSACleanup();
++#endif
++}
++
++void
++send_bones()
++{
++#ifdef WIN32
++    WSADATA wsaData;
++    WORD wVersionRequested =(WORD) (( 1) |  ( 1 << 8));
++#endif
++    int c;
++    int sd, fd;
++    int len;
++    NHBUF *bones;
++    char buf[BUFSZ];
++    char *bonesid;
++
++    bones = nh_buf_new();
++
++    ht_version(bones);
++    ht_uname(bones);
++    ht_endian(bones);
++    ht_sprintf(bones, "name: %s\n", plname);
++
++    fd = open_bonesfile(&u.uz, &bonesid);
++    if(fd < 0)
++	return;
++
++    ht_sprintf(bones, "filename: %s\n", bonesid);
++
++    ht_sprintf(bones, "bones: \n\n");
++
++    while((len = read(fd, buf, BUFSZ))> 0){
++	ht_append(bones, buf, len);
++    }
++
++    close(fd);
++
++#ifdef WIN32
++    if(WSAStartup(wVersionRequested, &wsaData)){
++	raw_printf("Report: WSAStartup failed.");
++	goto report_end;
++    }
++#endif
++    while((sd = connect_bonesserver()) < 0) {
++	raw_printf("Report: %s", soc_err());
++	if (WIN_MESSAGE == WIN_ERR)
++	    WIN_MESSAGE = create_nhwindow(NHW_MESSAGE);
++	c = yn_function("骨サーバーとの接続に失敗しました。再度接続を試みますか？",ynqchars,'y');
++	if(c != 'y')
++	    goto report_end;
++    }
++    http_post(sd, BONES_PATH, bones);
++
++    nh_buf_delete(bones);
++    delete_bonesfile(&u.uz);
++
++    bones = nh_buf_new();
++
++    {
++	NHBUF *sub;
++	int fd;
++	int pos;
++
++	http_read(sd, bones);
++	pos = nh_buf_search(bones, "\r\n\r\n");
++
++	if(pos >= 0){
++	    sub = nh_buf_subbuf(bones, pos + 4, 0);
++	    if(sub->size > 0){
++		fd = create_bonesfile(&u.uz, &bonesid);
++		if(fd >= 0){
++		    nh_buf_write(sub, fd);
++		    close(fd);
++		    commit_bonesfile(&u.uz);
++		}
++	    }
++	}
++    }
++
++    disconnect_server(sd);
++report_end:
++#ifdef WIN32
++    WSACleanup();
++#endif
++}
+diff -aurN jnethack/extension/nhbuf.c report/extension/nhbuf.c
+--- jnethack/extension/nhbuf.c	Thu Jan  1 09:00:00 1970
++++ report/extension/nhbuf.c	Wed Jun 25 22:03:57 2003
+@@ -0,0 +1,189 @@
++/*
++**
++**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**
++*/
++
++/* Copyright (c) Issei Numata 1994-2000 */
++
++#include <stdio.h>
++#include <stdarg.h>
++#include <ctype.h>
++#include "hack.h"
++
++#ifndef WIN32
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <netinet/in.h>
++#include <netdb.h>
++#include <sys/time.h>
++
++#include <setjmp.h>
++#include <signal.h>
++#else
++#include <winsock.h>
++#endif
++
++/*
++  simple buffer library
++ */
++
++#define	NH_BUFSIZ	(4096)
++
++#if defined(WIN32) || defined(SUNOS4)
++#define vasprintf	Vasprintf
++#endif
++
++#ifdef SUNOS4
++static int
++Vasprintf(char **buf, const char *fmt, va_list ap)
++{
++    int ret;
++
++    *buf = malloc(NH_BUFSIZ);
++
++    ret = vsnprintf(*buf, NH_BUFSIZ, fmt, ap);
++
++    return ret;
++}
++#endif
++
++#ifdef WIN32
++static int
++Vasprintf(char **buf, const char *fmt, va_list ap)
++{
++    int ret;
++    *buf = malloc(NH_BUFSIZ * 4);
++
++    ret = vsprintf(*buf, fmt, ap);
++
++    return ret;
++}
++#endif
++
++NHBUF *
++nh_buf_new(void)
++{
++    NHBUF *p;
++
++    p = malloc(sizeof(NHBUF));
++    if(!p)
++	return NULL;
++
++    p->size = 0;
++    p->max_size = NH_BUFSIZ;
++    p->data = malloc(NH_BUFSIZ);
++    if(!p->data){
++	free(p);
++	return NULL;
++    }
++    return p;
++}
++
++void
++nh_buf_delete(NHBUF *b)
++{
++    free(b->data);
++    free(b);
++}
++
++int
++nh_buf_append(NHBUF *buf, const char *data, size_t size)
++{
++    char *tmp;
++
++    while(buf->size + size > buf->max_size){
++	tmp = malloc(buf->max_size * 2);
++	if(!tmp)
++	    return -1;
++
++	memcpy(tmp, buf->data, buf->max_size);
++	free(buf->data);
++
++	buf->data = tmp;
++
++	buf->max_size *= 2;
++    }
++    memcpy(buf->data + buf->size, data, size);
++    buf->size += size;
++
++    return buf->size;
++}
++
++int
++nh_buf_sprintf(NHBUF *buf, const char *fmt, ...)
++{
++    int		ret;
++    char	*tmpbuf;
++    va_list	ap;
++
++    va_start(ap, fmt);
++    vasprintf(&tmpbuf, fmt, ap);
++    va_end(ap);
++
++    if(!tmpbuf)
++	return -1;
++
++    ret = nh_buf_append(buf, tmpbuf, strlen(tmpbuf));
++
++    free(tmpbuf);
++
++    return ret;
++}
++
++int
++nh_buf_read(NHBUF *buf, int fd)
++{
++    int len;
++    char tmp[NH_BUFSIZ];
++
++    while((len = read(fd, tmp, NH_BUFSIZ)) > 0)
++	nh_buf_append(buf, tmp, len);
++
++    return buf->size;
++}
++
++int
++nh_buf_write(NHBUF *buf, int fd)
++{
++    write(fd, buf->data, buf->size);
++
++    return buf->size;
++}
++
++int
++nh_buf_search(NHBUF *buf, const char *str)
++{
++    char *ret;
++
++    ret = strstr(buf->data, str);
++
++    if(!ret)
++	return -1;
++
++    return ret - buf->data;
++}
++
++NHBUF *
++nh_buf_subbuf(NHBUF *buf, int pos1, size_t sz)
++{
++    NHBUF *ret;
++
++    if(pos1 < 0)
++	return NULL;
++
++    ret = nh_buf_new();
++
++    if(sz <= 0)
++	sz = buf->size - pos1;
++
++    nh_buf_append(ret, buf->data + pos1, sz);
++
++    return ret;
++}
++
++
++
++
++
++
+diff -aurN jnethack/extension/nhinet.c report/extension/nhinet.c
+--- jnethack/extension/nhinet.c	Thu Jan  1 09:00:00 1970
++++ report/extension/nhinet.c	Wed Jun 25 22:03:57 2003
+@@ -0,0 +1,395 @@
++/*
++**
++**	$Id: report.patch,v 1.1 2003/06/25 13:55:07 argrath Exp $
++**
++*/
++
++/* Copyright (c) Issei Numata 1994-2000 */
++/* JNetHack may be freely redistributed.  See license for details. */
++
++#include <stdio.h>
++#include <stdarg.h>
++#include <ctype.h>
++#include "hack.h"
++
++#ifndef WIN32
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <netinet/in.h>
++#include <netdb.h>
++#include <sys/time.h>
++
++#include <setjmp.h>
++#include <signal.h>
++#else
++#include <winsock.h>
++#endif
++
++static char	*errstr;
++static char	*homeurl;
++static char	*proxy = HTTP_PROXY;
++static int	proxy_port = HTTP_PROXY_PORT;
++
++void
++set_homeurl(char *s)
++{
++    if(homeurl)
++	free(homeurl);
++
++    homeurl = malloc(strlen(s) + 1);
++    strcpy(homeurl, s);
++}
++
++char *
++get_homeurl()
++{
++    if(homeurl)
++	return homeurl;
++    else
++	return "";
++}
++
++void
++set_proxy(char *s)
++{
++#ifdef INET6
++    char *l, *r, *p;
++#else
++    size_t len;
++#endif
++
++/*
++    if(proxy)
++	free(proxy);
++    proxy = NULL;
++*/
++
++#ifndef WIN32
++    if(!strncasecmp(s, "http://", 7)){
++	s += 7;
++    }
++#else
++    if(!strnicmp(s, "http://", 7)){
++	s += 7;
++    }
++#endif
++
++#ifdef INET6
++    l = s;
++    if (*l == '['){
++	r = strrchr(l, ']');
++	if (r != NULL){
++	    *r++ = '\0';
++	    l++;
++	}
++	else
++	    r = s;
++    }
++    else
++	r = s;
++    p = strrchr(r, ':');
++    if (p != NULL)
++	*p++ = '\0';
++    proxy = malloc(strlen(l)+1);
++    if (proxy != NULL)
++	strcpy(proxy, l);
++    proxy_port = (p != NULL && *p) ? atoi(p) : HTTP_PROXY_PORT;
++#else
++    len = strlen(s);
++    proxy = malloc(len + 1);
++
++    --len;
++    while(len > 0 && s[len] >= '0' && s[len] <= '9')
++	--len;
++
++    if(len > 0 && s[len] == ':' && s[len + 1] != '\0'){
++	s[len] = '\0';
++	strcpy(proxy, s);
++	proxy_port = atoi(s + (len + 1));
++    }
++    else{
++	strcpy(proxy, s);
++	proxy_port = HTTP_PROXY_PORT;
++    }
++#endif
++
++    if(proxy_port == 0)
++	proxy_port = 80;
++}
++
++char *
++get_proxy()
++{
++    static char buf[BUFSIZ];
++
++    if(proxy && proxy[0]){
++#ifndef WIN32
++#ifdef INET6
++	snprintf(buf, sizeof(buf), 
++		 (strchr(proxy, ':') != NULL ? "[%s]:%d" : "%s:%d"),
++		 proxy, proxy_port);
++#else
++	snprintf(buf, sizeof(buf), "%s:%d", proxy, proxy_port);
++#endif
++#else
++#ifdef INET6
++	_snprintf(buf, sizeof(buf),
++		  (strchr(proxy, ':') != NULL ? "[%s]:%d" : "%s:%d"),
++		  proxy, proxy_port);
++#else
++	_snprintf(buf, sizeof(buf), "%s:%d", proxy, proxy_port);
++#endif
++#endif
++	buf[sizeof(buf)-1] = '\0';
++	return buf;
++    }
++    else
++	return "";
++}
++
++char *
++get_proxy_host()
++{
++    return proxy;
++}
++
++int
++get_proxy_port()
++{
++    return proxy_port;
++}
++
++int
++soc_read(int sd, char *buf, size_t sz)
++{
++#ifndef WIN32
++    return read(sd, buf, sz);
++#else
++    return recv(sd, buf, sz, 0);
++#endif
++}
++
++int
++soc_write(int sd, char *buf, size_t sz)
++{
++#ifndef WIN32
++    write(sd, buf, sz);
++#else
++    int nleft, nwritten;
++	
++    nleft = sz;
++
++    while (nleft > 0) {
++	nwritten = send(sd, buf, nleft, 0);
++	if (nwritten <= 0)
++	    return (nwritten);
++	nleft -= nwritten;
++	buf += nwritten;
++    }
++#endif
++    return sz;
++}
++
++int
++soc_write_str(int sd, char *buf)
++{
++    return soc_write(sd, buf, strlen(buf));
++}
++
++#ifndef WIN32
++static jmp_buf	env;
++static void (*sig_int_saved)(int);
++static void (*sig_alm_saved)(int);
++
++static void
++interrupt_report(int sig)
++{
++    unlock_file(RECORD);
++    longjmp(env, sig);
++}
++#endif
++
++static int
++connect_server(int timeout, const char *host, int port)
++{
++    int			sd;
++#ifdef INET6
++    struct addrinfo	hints, *res0, *res;
++    int			gai;
++    char		servbuf[NI_MAXSERV];
++#else
++    struct sockaddr_in	to;
++    struct hostent	*hp;
++#endif
++
++#ifndef WIN32
++    struct itimerval	val, val0;
++    int			ret;
++
++    val0.it_interval.tv_sec = 0;
++    val0.it_interval.tv_usec = 0;
++    val0.it_value.tv_sec = 0;
++    val0.it_value.tv_usec = 0;
++
++    val.it_interval.tv_sec = 0;
++    val.it_interval.tv_usec = 0;
++    val.it_value.tv_sec = 10;
++    val.it_value.tv_usec = 0;
++    
++    if((ret = setjmp(env)) != 0){
++	signal(SIGINT, sig_int_saved);
++	signal(SIGALRM, sig_alm_saved);
++	if(ret == SIGALRM)
++	    errstr = "error: timeout!\n";
++	else
++	    errstr = "error: interrupt!\n";
++	
++	return -1;
++    }
++    sig_int_saved = signal(SIGINT, interrupt_report);
++    sig_alm_saved = signal(SIGALRM, interrupt_report);
++    
++    setitimer(ITIMER_REAL, &val, NULL);
++#endif
++
++#ifdef INET6
++    snprintf(servbuf, sizeof(servbuf), "%d", port);
++    servbuf[sizeof(servbuf)-1] = '\0';
++
++    memset(&hints, 0, sizeof(hints));
++    hints.ai_family = PF_UNSPEC;
++    hints.ai_socktype = SOCK_STREAM;
++    gai = getaddrinfo(((proxy && proxy[0]) ? proxy : host), servbuf,
++		      &hints, &res0);
++    if (gai){
++	errstr = gai_strerror(gai);
++#ifndef WIN32
++	signal(SIGINT, sig_int_saved);
++	signal(SIGALRM, sig_alm_saved);
++#endif
++	return -1;
++    }
++#else /* INET6 / !INET6 */
++    if(proxy && proxy[0]){
++	if((hp = gethostbyname(proxy)) == NULL){
++	    errstr = "error: bad score server!\n";
++	    
++#ifndef WIN32
++	    signal(SIGINT, sig_int_saved);
++	    signal(SIGALRM, sig_alm_saved);
++#endif
++
++	    return -1;
++	}
++    }
++    else if((hp = gethostbyname(host)) == NULL){
++	errstr = "error: bad score server!\n";
++	
++#ifndef WIN32
++	signal(SIGINT, sig_int_saved);
++	signal(SIGALRM, sig_alm_saved);
++#endif
++	return -1;
++    }
++
++    memset(&to, 0, sizeof(to));
++    memcpy(&to.sin_addr, hp->h_addr_list[0], hp->h_length);
++    
++    to.sin_family = AF_INET;
++    
++    if(proxy && proxy[0] && proxy_port)
++	to.sin_port = htons(proxy_port);
++    else
++	to.sin_port = htons(port);
++#endif /* !INET6 */
++
++#ifndef WIN32
++    setitimer(ITIMER_REAL, &val0, NULL);
++
++    signal(SIGALRM, sig_alm_saved);
++#endif
++
++#ifdef INET6
++    sd = -1;
++    for (res=res0; res; res=res->ai_next){
++	sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
++#ifndef WIN32
++	if (sd < 0)
++	    continue;
++#else
++	if (sd == INVALID_SOCKET)
++	    continue;
++#endif
++	if (connect(sd, res->ai_addr, res->ai_addrlen) < 0){
++#ifndef WIN32
++	    close (sd);
++#else
++	    closesocket (sd);
++#endif
++	    sd = -1;
++	    continue;
++	}
++    }
++    freeaddrinfo(res0);
++    if (sd < 0){
++	errstr = "error: socket() / connect(): cannot connect score server";
++	return -1;
++    }
++#else /* INET6 / !INET6 */
++#ifndef WIN32
++    if((sd = socket(PF_INET, SOCK_STREAM, 0)) < 0){
++	errstr = "error: cannot create socket!\n";
++	return -1;
++    }
++#else
++    if((sd = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET){
++	errstr = "error: cannot create socket!\n";
++	return -1;
++    }
++#endif
++
++    if(connect(sd, (struct sockaddr *)&to, sizeof(to)) < 0){
++	errstr = "error: cannot connect score server!\n";
++#ifndef WIN32
++	close(sd);
++#else
++	closesocket(sd);
++#endif
++	return -1;
++    }
++#endif /* !INET6 */
++
++#ifndef WIN32
++    signal(SIGINT, sig_int_saved);
++#endif
++
++    return sd;
++}
++
++int
++connect_scoreserver()
++{
++    return connect_server(HTTP_TIMEOUT, SCORE_SERVER, SCORE_PORT);
++}
++
++int
++connect_bonesserver()
++{
++    return connect_server(HTTP_TIMEOUT, BONES_SERVER, BONES_PORT);
++}
++
++int
++disconnect_server(int sd)
++{
++#ifndef WIN32
++    return close(sd);
++#else
++    return closesocket(sd);
++#endif
++}
++
++char *
++soc_err()
++{
++    return errstr;
++}
+diff -aurN jnethack/include/config.h report/include/config.h
+--- jnethack/include/config.h	Wed Jun 25 21:34:54 2003
++++ report/include/config.h	Thu Mar  6 16:09:08 2003
+@@ -156,6 +156,33 @@
+ #define FIX_BUG_W340_14
+ #endif
+ 
++#if (defined(UNIX) || defined(WIN32)) && defined(NH_EXTENSION)
++
++#define NH_EXTENSION_REPORT
++
++#define REPORTSCORE_VER	1030
++#define SCORE_SERVER	"score.jnethack.org"
++#define SCORE_PATH	"http://www.jnethack.org/cgi-bin/report33"
++#define SCORE_PORT	80
++
++#define BONES_SERVER	"bones.jnethack.org"
++#define BONES_PATH	"http://www.jnethack.org/cgi-bin/bones"
++#define BONES_PORT	80
++
++#define HTTP_PROXY	""		/* default proxy if you need */
++#define HTTP_PROXY_PORT	3128		/* default proxy port if you need */
++/*
++  Example:
++
++#define HTTP_PROXY	"proxy.hoehoe.com"
++#define HTTP_PROXY_PORT	3128
++
++ */
++
++#define HTTP_TIMEOUT	2000
++
++#endif
++
+ #ifndef WIZARD		/* allow for compile-time or Makefile changes */
+ # ifndef KR1ED
+ #  define WIZARD  "wizard" /* the person allowed to use the -D option */
+diff -aurN jnethack/include/extern.h report/include/extern.h
+--- jnethack/include/extern.h	Wed Jun 25 21:35:25 2003
++++ report/include/extern.h	Mon Jun  9 06:37:08 2003
+@@ -2401,6 +2401,38 @@
+ E  unsigned char *FDECL(e2sj, (unsigned char *));
+ E  unsigned char *FDECL(sj2e, (unsigned char *));
+ 
++#ifdef NH_EXTENSION_REPORT
++E  char *NDECL(soc_err);
++E  int FDECL(soc_write, (int, char *, size_t));
++E  int FDECL(soc_read, (int, char *, size_t));
++E  int FDECL(soc_write_str, (int, char *));
++
++E  int NDECL(connect_scoreserver);
++E  int NDECL(connect_bonesserver);
++E  int FDECL(disconnect_server, (int));
++
++E  void FDECL(report_score, (char *, char *));
++E  void NDECL(send_bones);
++
++#include <nhbuf.h>
++
++E  NHBUF *NDECL(nh_buf_new);
++E  void   FDECL(nh_buf_delete, (NHBUF *b));
++E  int    FDECL(nh_buf_append, (NHBUF *b, const char *data, size_t));
++E  int    FDECL(nh_buf_sprintf, (NHBUF *b, const char *fmt, ...));
++E  int    FDECL(nh_buf_read, (NHBUF *b, int fd));
++E  int    FDECL(nh_buf_write, (NHBUF *b, int fd));
++E  int    FDECL(nh_buf_search, (NHBUF *b, const char *data));	
++E  NHBUF *FDECL(nh_buf_subbuf, (NHBUF *b, int pos1, size_t));
++
++E  void  FDECL(set_homeurl, (char *));
++E  char *NDECL(get_homeurl);
++
++E  void  FDECL(set_proxy, (char *));
++E  char *NDECL(get_proxy);
++E  char *NDECL(get_proxy_host);
++E  int	 NDECL(get_proxy_port);
++#endif
+ #endif
+ 
+ #undef E
+diff -aurN jnethack/include/flag.h report/include/flag.h
+--- jnethack/include/flag.h	Wed Jun 25 21:35:42 2003
++++ report/include/flag.h	Thu Mar  6 16:09:08 2003
+@@ -113,6 +113,9 @@
+ 	unsigned short amii_dripens[ 20 ]; /* DrawInfo Pens currently there are 13 in v39 */
+ 	AMII_COLOR_TYPE amii_curmap[ AMII_MAXCOLORS ]; /* colormap */
+ #endif
++#ifdef NH_EXTENSION_REPORT
++	boolean	reportscore;
++#endif
+ 
+ 	/* KMH, role patch -- Variables used during startup.
+ 	 *
+diff -aurN jnethack/src/end.c report/src/end.c
+--- jnethack/src/end.c	Wed Jun 25 21:36:23 2003
++++ report/src/end.c	Mon Jun  9 06:27:13 2003
+@@ -98,6 +98,10 @@
+ #define ASCENDED	16
+ #endif
+ 
++#ifdef NH_EXTENSION_REPORT
++int	report_flag = 0;
++#endif
++
+ #if 0 /*JP*/
+ /*
+  * The order of these needs to match the macros in hack.h.
+@@ -509,6 +513,17 @@
+ 		show_conduct(how >= PANICKED ? 1 : 2);
+ 	    if (c == 'q') done_stopprint++;
+ 	}
++#ifdef	NH_EXTENSION_REPORT
++	if (0 || (flags.reportscore && !wizard && !discover)){
++	  if (!done_stopprint &&
++		(!flags.end_disclose[0] || index(flags.end_disclose, 'a'))) {
++	    c = yn_function("今回のプレイ結果をスコアサーバ(http://www.jnethack.org/)に報告しますか？",ynqchars,'y');
++	    if(c == 'y')
++	      report_flag = 1;
++	    if (c == 'q') done_stopprint++;
++	  }
++	}
++#endif
+ }
+ 
+ /* try to get the player back in a viable state after being killed */
+diff -aurN jnethack/src/options.c report/src/options.c
+--- jnethack/src/options.c	Wed Jun 25 21:37:09 2003
++++ report/src/options.c	Thu Apr  3 16:56:21 2003
+@@ -153,6 +153,10 @@
+ #else
+ 	{"rawio", (boolean *)0, FALSE, SET_IN_FILE},
+ #endif
++/* by ISSEI */
++#ifdef NH_EXTENSION_REPORT
++	{"report", &flags.reportscore, TRUE},
++#endif
+ 	{"rest_on_space", &flags.rest_on_space, FALSE, SET_IN_GAME},
+ 	{"safe_pet", &flags.safe_dog, TRUE, SET_IN_GAME},
+ #ifdef WIZARD
+@@ -322,6 +326,10 @@
+ 	{ "windowtype", "windowing system to use", WINTYPELEN, DISP_IN_GAME },
+ #if 1 /*JP*/
+ 	{ "kcode", "端末の漢字コード,", 4, SET_IN_FILE },
++#ifdef	NH_EXTENSION_REPORT
++	{ "homeurl", "あなたのホームページURL,", 128, SET_IN_FILE },
++	{ "proxy", "HTTPプロキシ,", 128, SET_IN_FILE },
++#endif
+ #endif
+ 	{ (char *)0, (char *)0, 0, 0 }
+ };
+@@ -1748,6 +1756,25 @@
+ 	    }
+ 	    return;
+         }
++#ifdef NH_EXTENSION_REPORT
++        fullname = "homeurl";
++        if (match_optname(opts, fullname, 5, TRUE)) {
++            if (negated) 
++                bad_negation(fullname, FALSE);
++            else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
++                set_homeurl(op);
++            return;
++        }
++
++        fullname = "proxy";
++        if (match_optname(opts, fullname, 5, TRUE)) {
++            if (negated) 
++                bad_negation(fullname, FALSE);
++            else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
++                set_proxy(op);
++            return;
++        }
++#endif
+ 
+ 	/* scores:5t[op] 5a[round] o[wn] */
+ 	if (match_optname(opts, "scores", 4, TRUE)) {
+diff -aurN jnethack/src/topten.c report/src/topten.c
+--- jnethack/src/topten.c	Wed Jun 25 21:39:45 2003
++++ report/src/topten.c	Sun Mar 23 16:22:35 2003
+@@ -10,6 +10,10 @@
+ #include "patchlevel.h"
+ #endif
+ 
++#ifdef NH_EXTENSION_REPORT	/*JP*/
++extern int report_flag;		/* end.c で定義 */
++#endif
++
+ #ifdef VMS
+  /* We don't want to rewrite the whole file, because that entails	 */
+  /* creating a new version which requires that the old one be deletable. */
+@@ -63,7 +67,11 @@
+ STATIC_DCL void FDECL(topten_print_bold, (const char *));
+ STATIC_DCL xchar FDECL(observable_depth, (d_level *));
+ STATIC_DCL void NDECL(outheader);
++#ifdef NH_EXTENSION_REPORT
++STATIC_DCL void FDECL(outentry, (int,struct toptenentry *,BOOLEAN_P, BOOLEAN_P));
++#else
+ STATIC_DCL void FDECL(outentry, (int,struct toptenentry *,BOOLEAN_P));
++#endif
+ STATIC_DCL void FDECL(readentry, (FILE *,struct toptenentry *));
+ STATIC_DCL void FDECL(writeentry, (FILE *,struct toptenentry *));
+ STATIC_DCL void FDECL(free_ttlist, (struct toptenentry *));
+@@ -525,16 +533,33 @@
+ 		    !flags.end_own)
+ 		topten_print("");
+ 	    if(rank != rank0)
++#ifdef NH_EXTENSION_REPORT
++		outentry(rank, t1, FALSE, FALSE);
++#else
+ 		outentry(rank, t1, FALSE);
++#endif
+ 	    else if(!rank1)
++#ifdef NH_EXTENSION_REPORT
++		outentry(rank, t1, TRUE, TRUE);
++#else
+ 		outentry(rank, t1, TRUE);
++#endif
+ 	    else {
++#ifdef NH_EXTENSION_REPORT
++		outentry(rank, t1, TRUE, FALSE);
++		outentry(0, t0, TRUE, TRUE);
++#else
+ 		outentry(rank, t1, TRUE);
+ 		outentry(0, t0, TRUE);
++#endif
+ 	    }
+ 	}
+ 	if(rank0 >= rank) if(!done_stopprint)
++#ifdef NH_EXTENSION_REPORT
++		outentry(0, t0, TRUE, TRUE);
++#else
+ 		outentry(0, t0, TRUE);
++#endif
+ #ifdef UPDATE_RECORD_IN_PLACE
+ 	if (flg) {
+ # ifdef TRUNCATE_FILE
+@@ -585,10 +610,19 @@
+ 
+ /* so>0: standout line; so=0: ordinary line */
+ STATIC_OVL void
++#ifdef NH_EXTENSION_REPORT
++/*JP if re == TRUE, report score */
++outentry(rank, t1, so, re)
++struct toptenentry *t1;
++int rank;
++boolean so;
++boolean re;
++#else
+ outentry(rank, t1, so)
+ struct toptenentry *t1;
+ int rank;
+ boolean so;
++#endif
+ {
+ 	boolean second_line = TRUE;
+ 	char linebuf[BUFSZ];
+@@ -793,6 +827,13 @@
+ 	/* beginning of hp column after padding (not actually padded yet) */
+ 	hppos = COLNO - (sizeof("  Hp [max]")-1); /* sizeof(str) includes \0 */
+ 
++#ifdef NH_EXTENSION_REPORT
++	if(report_flag && re){
++	    report_score(action, linebuf);
++	    send_bones();
++	    re = 0;
++	}
++#endif
+ #if 1 /*JP*/
+ 	while(lngr >= hppos ){
+ /*
+@@ -1008,7 +1049,11 @@
+ 	    t1 = tt_head;
+ 	    for (rank = 1; t1->points != 0; rank++, t1 = t1->tt_next) {
+ 		if (score_wanted(current_ver, rank, t1, playerct, players, uid))
++#ifdef NH_EXTENSION_REPORT
++		    (void) outentry(rank, t1, 0, 0);
++#else
+ 		    (void) outentry(rank, t1, 0);
++#endif
+ 	    }
+ 	} else {
+ 	    Sprintf(pbuf, "Cannot find any %sentries for ",
