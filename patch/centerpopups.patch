@@ -1,0 +1,99 @@
+diff -aur jnethack/include/config.h new/include/config.h
+--- jnethack/include/config.h	Sat Jan  4 22:24:22 2003
++++ new/include/config.h	Fri Jan  3 03:02:52 2003
+@@ -134,6 +134,7 @@
+ #  define GRAPHIC_TOMBSTONE	/* Use graphical tombstone (rip.xpm) */
+ #  define X11LARGETILE		/* Large tile for X11 */
+ # endif
++# define X11CENTERPOPUPS	/* Popup dialogs at the center of window */
+ #endif
+ 
+ 
+diff -aur jnethack/include/winX.h new/include/winX.h
+--- jnethack/include/winX.h	Sat Jan  4 23:23:03 2003
++++ new/include/winX.h	Fri Jan  3 02:13:30 2003
+@@ -281,6 +281,9 @@
+     int     tombtext_dx;	/* x-displacement between tombstone line */
+     int     tombtext_dy;	/* y-displacement between tombstone line */
+ #endif
++#ifdef X11CENTERPOPUPS
++    Boolean center_popups;	/* to centre popups over the main window */
++#endif
+ } AppResources;
+ 
+ E AppResources appResources;
+diff -aur jnethack/win/X11/JNetHack.ad new/win/X11/JNetHack.ad
+--- jnethack/win/X11/JNetHack.ad	Sat Jan  4 22:27:07 2003
++++ new/win/X11/JNetHack.ad	Fri Jan  3 01:55:18 2003
+@@ -80,6 +80,11 @@
+ ! If your window manager does click-to-focus, you'll probably want this False.
+ !JNetHack*autofocus: True
+ !
++! If True, popup windows are centred over the main nethack window.  If False,
++! they're positioned under the mouse.  True is useful with a click-to-focus
++! style window manager where you leave the mouse to one side when not in use.
++!JNetHack*centerPopups: True
++!
+ ! Specify the number of rows and columns of the map window.  The default
+ ! is the standard 80x21 window.  Note: this _does_not_ change JNetHack's
+ ! level size, only what you see of it.
+diff -aur jnethack/win/X11/dialogs.c new/win/X11/dialogs.c
+--- jnethack/win/X11/dialogs.c	Sat Jan  4 23:32:10 2003
++++ new/win/X11/dialogs.c	Sat Jan  4 23:31:07 2003
+@@ -72,6 +72,11 @@
+ #endif
+ #endif
+ 
++#ifdef X11CENTERPOPUPS
++#include "hack.h"
++#include "winX.h"
++#endif
++
+ /* ":" added to both translations below to allow limited redefining of
+  * keysyms before testing for keysym values -- dlc */
+ static const char okay_accelerators[] =
+@@ -344,8 +349,30 @@
+     /* following line deals with a race condition w/brain-damaged WM's -dlc */
+     XtUnrealizeWidget(w);
+ 
++#ifndef X11CENTERPOPUPS
+     XQueryPointer(XtDisplay(toplevel), XtWindow(toplevel), &root, &child,
+ 		  &x, &y, &dummyx, &dummyy, &dummymask);
++#else
++    if (appResources.center_popups) {
++	/* At startup the toplevel window can have a negative x or y,
++	 * and if that happens they're interpreted as zero.
++	 */
++	Dimension toplevel_width, toplevel_height;
++	Position  toplevel_x, toplevel_y;
++	XtVaGetValues (toplevel,
++		       XtNwidth, &toplevel_width, XtNheight, &toplevel_height,
++		       NULL);
++	XtTranslateCoords(toplevel, 0, 0, &toplevel_x, &toplevel_y);
++	if (toplevel_x < 0)  toplevel_x = 0;
++	if (toplevel_y < 0)  toplevel_y = 0;
++	x = toplevel_x + toplevel_width / 2;
++	y = toplevel_y + toplevel_height / 2;
++
++    } else {
++	XQueryPointer(XtDisplay(toplevel), XtWindow(toplevel), &root, &child,
++		      &x, &y, &dummyx, &dummyy, &dummymask);
++    }
++#endif
+     num_args = 0;
+     XtSetArg(args[num_args], XtNwidth, &width); num_args++;
+     XtSetArg(args[num_args], XtNheight, &height); num_args++;
+diff -aur jnethack/win/X11/winX.c new/win/X11/winX.c
+--- jnethack/win/X11/winX.c	Sat Jan  4 22:25:17 2003
++++ new/win/X11/winX.c	Fri Jan  3 02:13:28 2003
+@@ -1004,6 +1004,10 @@
+     { "tombtext_dy", "Tombtext_dy", XtRInt, sizeof(int),
+       XtOffset(AppResources *,tombtext_dy), XtRString, "13" },
+ #endif
++#ifdef X11CENTERPOPUPS
++    { "centerPopups", "CenterPopups", XtRBoolean, sizeof(Boolean),
++      XtOffset(AppResources *,center_popups), XtRImmediate, False },
++#endif
+ };
+ 
+ void
