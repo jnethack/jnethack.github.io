@@ -1,0 +1,113 @@
+diff -urN jnethack-3.6.0-0.6_souecepart/sys/winnt/Makefile.gcc jnethack-3.6.0-0.6_souecepart+/sys/winnt/Makefile.gcc
+--- jnethack-3.6.0-0.6_souecepart/sys/winnt/Makefile.gcc	Mon Jun 22 13:58:42 2015
++++ jnethack-3.6.0-0.6_souecepart+/sys/winnt/Makefile.gcc	Tue Jul 26 21:50:40 2016
+@@ -41,10 +41,10 @@
+ #
+ 
+ # 64 bit
+-#TARGET_CPU=x64
++TARGET_CPU=x64
+ #
+ # 32 bit
+-TARGET_CPU=x86
++#TARGET_CPU=x86
+ #
+ #---------------------------------------------------------------
+ # 2. Where do you want the game to be built (which folder)?
+@@ -97,6 +97,8 @@
+ MSWIN = ../win/win32
+ # Tile support files
+ WSHR  = ../win/share
++# JP
++JP    = ../japanese
+ 
+ #
+ #  Object directory.
+@@ -173,7 +175,7 @@
+ # Setting up the compiler and linker
+ # macros. All builds include the base ones.
+ #==========================================
+-cflags = -mms-bitfields
++cflags = -mms-bitfields -finput-charset=CP932 -fexec-charset=CP932
+ lflags  =
+ ifeq  "$(DEBUGINFO)" "Y"
+ cdebug = -g
+@@ -282,9 +284,9 @@
+ VOBJ10 = $(O)mail.o     $(O)makemon.o  $(O)mapglyph.o $(O)mcastu.o
+ VOBJ11 = $(O)mhitm.o    $(O)mhitu.o    $(O)minion.o   $(O)mklev.o
+ VOBJ12 = $(O)mkmap.o    $(O)mkmaze.o   $(O)mkobj.o    $(O)mkroom.o
+-VOBJ13 = $(O)mon.o      $(O)mondata.o  $(O)monmove.o  $(O)monst.o
++VOBJ13 = $(O)mon.o      $(O)mondata.o  $(O)monmove.o  $(O)monstj.o
+ VOBJ14 = $(O)monstr.o   $(O)mplayer.o  $(O)mthrowu.o  $(O)muse.o
+-VOBJ15 = $(O)music.o    $(O)o_init.o   $(O)objects.o  $(O)objnam.o
++VOBJ15 = $(O)music.o    $(O)o_init.o   $(O)objectsj.o  $(O)objnam.o
+ VOBJ16 = $(O)options.o  $(O)pager.o    $(O)pickup.o   $(O)pline.o
+ VOBJ17 = $(O)polyself.o $(O)potion.o   $(O)pray.o     $(O)priest.o
+ VOBJ18 = $(O)quest.o    $(O)questpgr.o $(RANDOM)      $(O)read.o
+@@ -300,6 +302,8 @@
+ 
+ DLBOBJ = $(O)dlb.o
+ 
++JOBJ = $(O)jconj.o $(O)jlib.o
++
+ REGEX  = $(O)cppregex.o
+ 
+ TTYOBJ = $(O)topl.o     $(O)getline.o  $(O)wintty.o
+@@ -312,7 +316,7 @@
+ 	$(VOBJ11) $(VOBJ12) $(VOBJ13) $(VOBJ14) $(VOBJ15) \
+ 	$(VOBJ16) $(VOBJ17) $(VOBJ18) $(VOBJ19) $(VOBJ20) \
+ 	$(VOBJ21) $(VOBJ22) $(VOBJ23) $(VOBJ24) $(VOBJ25) \
+-	$(VOBJ26) $(VOBJ27) $(REGEX)
++	$(VOBJ26) $(VOBJ27) $(JOBJ) $(REGEX)
+ 
+ GUIOBJ  = $(O)mhaskyn.o $(O)mhdlg.o \
+ 	$(O)mhfont.o $(O)mhinput.o $(O)mhmain.o $(O)mhmap.o \
+@@ -443,6 +447,13 @@
+ 	$(cc) $(CFLAGS)  -o$@  $<
+ 
+ #==========================================
++# Rules for files in japanese
++#==========================================
++
++$(OBJ)/%.o : $(JP)/%.c
++	$(cc) $(CFLAGS)  -o$@  $<
++
++#==========================================
+ # Rules for files in win/win32
+ #==========================================
+ 
+@@ -1086,7 +1097,6 @@
+ $(O)ntsound.o: $(HACK_H) $(MSWSYS)/ntsound.c
+ 	$(cc) $(CFLAGS)  -o$@ $(MSWSYS)/ntsound.c
+ 
+-
+ #if you aren't linking in the full gui then
+ #include the following stub for proper linkage.
+ 
+@@ -1109,6 +1119,17 @@
+ 	$(cc) $(CFLAGS) -o$@ $(U)panic.c
+ 
+ #
++# Japanese translation
++#
++
++$(O)jconj.o: ../japanese/jconj.c  $(HACK_H)
++	$(cc) $(CFLAGS) -o$@ ../japanese/jconj.c
++$(O)jlib.o: ../japanese/jlib.c $(HACK_H)
++	$(cc) $(CFLAGS) -o$@ ../japanese/jlib.c
++#$(O)jtrns.o: ../japanese/jtrns.c $(HACK_H) ../include/jdata.h
++#	$(cc) $(CFLAGS) -o$@ ../japanese/jtrns.c
++
++#
+ # The rest are stolen from sys/unix/Makefile.src,
+ # with the following changes:
+ #   * ../include changed to $(INCL)
+@@ -1304,6 +1325,8 @@
+ $(O)o_init.o: o_init.c $(HACK_H) $(INCL)/lev.h
+ $(O)objects.o: objects.c $(CONFIG_H) $(INCL)/obj.h $(INCL)/objclass.h \
+ 		$(INCL)/prop.h $(INCL)/skills.h $(INCL)/color.h
++$(O)objectsj.o: objectsj.c $(CONFIG_H) $(INCL)/obj.h $(INCL)/objclass.h \
++		$(INCL)/prop.h $(INCL)/skills.h $(INCL)/color.h
+ $(O)objnam.o: objnam.c $(HACK_H)
+ $(O)options.o: options.c $(CONFIG_H) $(INCL)/objclass.h $(INCL)/flag.h \
+ 		$(HACK_H) $(INCL)/tcap.h
