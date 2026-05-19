@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Issue Tracker Viewer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 1rem;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #search {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.5rem;
+            margin: 1rem auto;
+            display: block;
+        }
+
+        .issue {
+            background: #fff;
+            margin: 0.5rem auto;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .issue h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .meta {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .description {
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .comments {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .comment {
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Issue Tracker Viewer</h1>
+    <input type="text" id="search" placeholder="検索 (タイトル/ID)" />
+    <div id="statusFilters" style="text-align:center; margin:0.5rem 0;">
+        <label style="margin-right:0.5rem;"><input type="checkbox" id="filter-open" checked> open</label>
+        <label style="margin-right:0.5rem;"><input type="checkbox" id="filter-closed"> closed</label>
+        <label><input type="checkbox" id="filter-unknown"> unknown</label>
+    </div>
+    <div id="issuesContainer"></div>
+
+    <script>
+        const JSON_FILE = "ticket_202401.json"; // 固定ファイル名
+        let ALL_ISSUES = [];
+
+        // Fetch and render issues
+        async function loadIssues() {
+            try {
+                const response = await fetch(JSON_FILE);
+                if (!response.ok) throw new Error('Failed to load JSON');
+                const data = await response.json();
+                // Assume data is an array of issue objects
+                ALL_ISSUES = Array.isArray(data) ? data : [];
+                renderIssues(ALL_ISSUES);
+            } catch (e) {
+                document.getElementById('issuesContainer').innerHTML = `<p style="color:red;">${e.message}</p>`;
+            }
+        }
+
+        function renderIssues(issues) {
+            const container = document.getElementById('issuesContainer');
+            container.innerHTML = '';
+            // Sort issues by numeric id ascending before rendering
+            const sorted = Array.isArray(issues) ? issues.slice().sort((a, b) => a.id - b.id) : [];
+            // If URL has fragment like #i123, show only that issue (ignore status checkboxes)
+            const hashMatch = location.hash.match(/^#i(\d+)$/);
+            let filtered;
+            if (hashMatch) {
+                const targetId = Number(hashMatch[1]);
+                const target = sorted.find(i => Number(i.id) === targetId);
+                filtered = target ? [target] : [];
+            } else {
+                // Read filter checkboxes
+                const showOpen = document.getElementById('filter-open')?.checked;
+                const showClosed = document.getElementById('filter-closed')?.checked;
+                const showUnknown = document.getElementById('filter-unknown')?.checked;
+                filtered = sorted.filter(issue => {
+                    const s = String(issue.status).toLowerCase();
+                    if (s === 'open') return showOpen;
+                    if (s === 'closed') return showClosed;
+                    return showUnknown;
+                });
+            }
+            filtered.forEach(issue => {
+                const div = document.createElement('div');
+                div.className = 'issue';
+                const id = issue.id;
+                div.id = `i${id}`; // anchor for direct link
+                const title = issue.name;
+                const status = issue.status;
+                const createdRaw = issue.created_at || issue.opened_at;
+                const created = createdRaw ? new Date(createdRaw).toLocaleString() : '';
+                const desc = issue.description || '';
+                // Build comments HTML if present
+                let commentsHtml = '';
+                if (Array.isArray(issue.comment) && issue.comment.length > 0) {
+                    // Sort comments by submitted_at ascending (oldest first)
+                    const sortedComments = issue.comment.slice().sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+                    commentsHtml = '<div class="comments"><strong>Comments:</strong>' +
+                        sortedComments.map(c => {
+                            // Normalize raw comment text (prefer HTML if provided)
+                            let raw = c.comment_html ? c.comment_html : c.comment;
+                            // Replace OSDN commit URLs with GitHub commit URLs
+                            const osdnRe = /https:\/\/osdn\.net\/projects\/jnethack\/scm\/git\/source\/commits\/([0-9a-fA-F]+)/g;
+                            raw = raw.replace(osdnRe, 'https://github.com/jnethack/jnethack-alpha/commit/$1');
+                            // If original was plain text, escape it for safe HTML
+                            const content = c.comment_html ? raw : escapeHtml(raw);
+                            const author = c.submitted_by;
+                            const date = new Date(c.submitted_at).toLocaleString();
+                            return `<div class="comment">${author} (${date}): ${content}</div>`;
+                        }).join('') +
+                        '</div>';
+                }
+                div.innerHTML = `
+          <h2><a href="#i${id}">${title}</a></h2>
+          <div class="meta">ID: ${id} | 状態: ${status} | 作成日: ${created}</div>
+          <div class="description">${escapeHtml(desc)}</div>
+          ${commentsHtml}
+        `;
+                container.appendChild(div);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Search filter function (reusable)
+        function applySearchFilter() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const cards = document.querySelectorAll('.issue');
+            cards.forEach(card => {
+                const txt = card.innerText.toLowerCase();
+                if (txt.includes(term)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            // If a fragment is present, ensure that specific issue remains visible
+            if (location.hash) {
+                const el = document.querySelector(location.hash);
+                if (el) el.classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('search').addEventListener('input', applySearchFilter);
+
+        // Re-render when status filter checkboxes change
+        ['filter-open', 'filter-closed', 'filter-unknown'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', () => {
+                renderIssues(ALL_ISSUES);
+                applySearchFilter();
+            });
+        });
+
+        // After loading issues, scroll to hash if present
+        function scrollToHash() {
+            if (location.hash) {
+                const el = document.querySelector(location.hash);
+                if (el) el.scrollIntoView();
+            }
+        }
+
+        // Initialize
+        loadIssues().then(scrollToHash);
+    </script>
+</body>
+
+</html>
